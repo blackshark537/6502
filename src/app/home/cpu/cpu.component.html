@@ -1,0 +1,97 @@
+<ion-buttons>
+  <ion-title slot="start">
+    <h1>6502</h1>
+  </ion-title>
+
+  <ion-button (click)="device.restart()" fill="solid" slot="end">REST</ion-button>
+  <ion-button (click)="device.run()" fill="solid" slot="end">RUN</ion-button>
+  <ion-button (click)="device.tick()" fill="solid" slot="end">TICK</ion-button>
+  <ion-button (click)="device.stop()" fill="solid" slot="end">STOP</ion-button>
+</ion-buttons>
+
+<div class="container">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" >
+
+        <ion-accordion-group [multiple]="true">
+          <ion-accordion value="registers">
+            <ion-item slot="header" color="light">
+              <ion-label>REGISTERS</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <!-- <ion-row>
+                <ion-col size="2.4">A</ion-col>
+                <ion-col size="2.4">X</ion-col>
+                <ion-col size="2.4">Y</ion-col>
+                <ion-col size="2.4">PC</ion-col>
+                <ion-col size="2.4">STK</ion-col>
+              </ion-row> -->
+              <ion-row>
+                <ion-col size="2.2">A: {{device.status.A | zeropad: 2}}</ion-col>
+                <ion-col size="2.2">X: {{device.status.X | zeropad: 2}}</ion-col>
+                <ion-col size="2.2">Y: {{device.status.Y | zeropad: 2}}</ion-col>
+                <ion-col size="3">PC: {{device.status.PC | zeropad: 4}}</ion-col>
+                <ion-col size="2.35">SP: {{device.status.STACK | zeropad: 3}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  OP: {{device.status.CODE | zeropad: 2}} [ {{device.status.NAME}} ]
+                </ion-col>
+                <ion-col size="12">
+                  DATA: {{device.status.DATA | zeropad: 2}} ADDR: {{device.status.PC | zeropad: 4}}
+                </ion-col>
+                <ion-col size="12">
+                  Cycles: {{device.status.CYCLES }}
+                </ion-col>
+              </ion-row>
+            </div>
+          </ion-accordion>
+  
+          <ion-accordion value="status">
+            <ion-item slot="header" color="light">
+              <ion-label>FLAGS</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <ion-row>
+                <ion-col size="1">N</ion-col>
+                <ion-col size="1">V</ion-col>
+                <ion-col size="1">U</ion-col>
+                <ion-col size="1">B</ion-col>
+                <ion-col size="1">D</ion-col>
+                <ion-col size="1">I</ion-col>
+                <ion-col size="1">Z</ion-col>
+                <ion-col size="1">C</ion-col>
+                
+              </ion-row>
+                <ion-row>
+                  <ion-col size="1">{{device.status.STATUS.N}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.V}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.U}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.B}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.D}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.I}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.Z}}</ion-col>
+                  <ion-col size="1">{{device.status.STATUS.C}}</ion-col>
+                </ion-row>
+            </div>
+          </ion-accordion>
+          <ion-accordion value="info">
+            <ion-item slot="header" color="light">
+              <ion-label>INFO</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">  
+              <ion-label>
+                <p>Device: {{device.vendor.device}}</p>
+                <p>Freq: {{device.vendor.clock}}</p>
+                <p>Fabricant: {{device.vendor.fabricant}}</p>
+                <p>Year: {{device.vendor.year}}</p>
+              </ion-label>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+        
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

@@ -1,8 +1,8 @@
 {
   "name": "6502",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "version": "Beta 0.1.0",
+  "author": "Berlys Santos Cruz @blackshark537",
+  "homepage": "https://github.com/blackshark537/6502",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,6 +26,8 @@
     "@capacitor/status-bar": "4.0.1",
     "@ionic/angular": "^6.1.9",
     "ionicons": "^6.0.3",
+    "monaco-editor": "^0.34.0",
+    "ng-monaco-editor": "^5.0.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"

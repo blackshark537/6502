@@ -1,0 +1,65 @@
+
+/**
+ * Instruction Interface Model
+ */
+ export interface iOpcode{
+    name: string;
+    exec(): number;
+    addMode(): number;
+    cicle: number;
+    opcode?: number;
+}
+
+/**
+ * Cpu Status Flags.
+ */
+export enum FLAGS6502
+{
+    C = (1 << 0),	// Carry Bit
+    Z = (1 << 1),	// Zero
+    I = (1 << 2),	// Disable Interrupts
+    D = (1 << 3),	// Decimal Mode (unused in this implementation)
+    B = (1 << 4),	// Break
+    U = (1 << 5),	// Unused
+    V = (1 << 6),	// Overflow
+    N = (1 << 7),	// Negative
+};
+
+export enum PORTBIT
+{
+    A = (1 << 0),	// Bit 0
+    B = (1 << 1),	// Bit 1
+    C = (1 << 2),	// Bit 2
+    D = (1 << 3),	// Bit 3
+    E = (1 << 4),	// Bit 4
+    F = (1 << 5),	// Bit 5
+    G = (1 << 6),	// Bit 6
+    H = (1 << 7),	// Bit 7
+};
+
+export interface DeviceInfo { device: string; fabricant: string; year: string; clock: string };
+
+export interface DeviceState{
+    STATUS: {
+        N: number;
+        V: number;
+        U: number;
+        B: number;
+        D: number;
+        I: number;
+        Z: number;
+        C: number;
+    };
+    A: string;
+    X: string;
+    Y: string;
+    PC: string;
+    STACK: string;
+    CLOCKS: number | string;
+    CYCLES: number;
+    CODE: string;
+    DATA: string;
+    NAME: string;
+    FINISH: boolean;
+
+}
