@@ -9,7 +9,7 @@ import { interval } from 'rxjs';
     providedIn: 'root'
 })
 export class CPUDeviceService {
-    private speed: number = 30;
+    private speed: number = 20;
     private cpu: CPU;
     private sub$: Subscription;
 

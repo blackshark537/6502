@@ -16,10 +16,9 @@ declare var monaco: any;
 export class CodeComponent implements OnInit, AfterViewInit {
   source: string = `;**************************************************************
 ;*                                                            *
-;*        AUTHOR  :                                           *
+;*      Welcome To 6502 8-Bits Computer Emulator:             *
 ;*                                                            *
 ;*        32 Kilobytes of ROM Max                             *
-;*        COMMANDS COMVENTIONS:                               *
 ;*        .byte save some bytes at compile time.              *
 ;*        .word save two bytes at compile time.               *
 ;*        .org  set address at compile time.                  *

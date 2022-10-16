@@ -1,6 +1,28 @@
 <h2>6522</h2>
-<app-port-a></app-port-a>
-<app-port-b></app-port-b>
-<ion-buttons style="margin-top: 2em;">
-    <ion-button fill="solid" (click)="device.irq()">Interrupt</ion-button>
-</ion-buttons>
+<app-leds [set]="device.PORTA$ | async" ></app-leds>
+<app-leds [set]="device.PORTB$ | async" color="warning"></app-leds>
+
+<ion-accordion-group [multiple]="true" style="margin-top: 2em;">
+    <ion-accordion value="irq" >
+      <ion-item slot="header" color="light">
+        <ion-label>Settings</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-item>
+            <ion-checkbox [(ngModel)]="device.canRandom" slot="start"></ion-checkbox>
+            <ion-label>Activate Random Number Generator</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-checkbox [(ngModel)]="device.connectToIRQ" slot="start"></ion-checkbox>
+            <ion-label>Connets to 6502 IRQ PIN</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-checkbox [(ngModel)]="device.connectToNMI" slot="start"></ion-checkbox>
+            <ion-label>Connets to 6502 NMI PIN</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-button fill="solid" (click)="device.irq()">Interrupt</ion-button>
+        </ion-item>
+      </div>
+    </ion-accordion>
+</ion-accordion-group>

@@ -12,9 +12,7 @@
 ;**************************************************************
 ;
 ; System Vector Locations
-NMI     = $FFFA ; non maskable interrupt address
-RESB    = $FFFC ; restart address
-IRQ     = $FFFE ; interrupt address
+VECTORS = $FFFA ; non maskable interrupt address
 
 PORTB   = $6000 ; port B address
 PORTA   = $6001 ; port A address
@@ -69,12 +67,7 @@ loop:
     jmp loop 
 
 ; setting interrrupt address of function handler
-.org IRQ
-.addr irq_handler 
-
-; setting non maskable interrupt address of function handler
-.org NMI
+.org VECTORS
 .addr irq_handler
-
-.org RESB
 .addr restart
+.addr irq_handler 

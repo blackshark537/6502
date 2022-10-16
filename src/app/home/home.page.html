@@ -43,8 +43,8 @@
 
   <ion-grid>
     <ion-row style="height: 90vh;">
-      <ion-col size="8" >
-        <ion-accordion-group [multiple]="false" [value]="['code']">
+      <ion-col size="12" size-md="6" size-lg="7" style="border-left: .4px solid grey;">
+        <ion-accordion-group [multiple]="true" [value]="['code']">
           <ion-accordion value="code" >
             <ion-item slot="header" color="light">
               <ion-label>ASSEMBLER</ion-label>
@@ -63,7 +63,7 @@
           </ion-accordion>
           <ion-accordion value="memory-map">
             <ion-item slot="header" color="light">
-              <ion-label>MEMORY MAP</ion-label>
+              <ion-label>MEMORY LAYOUT</ion-label>
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-mem-map></app-mem-map>
@@ -72,13 +72,13 @@
         </ion-accordion-group>
         
       </ion-col>
-      <ion-col size="4" style="border-left: .4px solid grey;">
+      <ion-col size="12" size-md="6" size-lg="5" style="border-left: .4px solid grey;">
         <ion-accordion-group [multiple]="true" [value]="['via', 'cpu']">
           <ion-accordion value="via" >
             <ion-item slot="header" color="light">
               <ion-label>Versatile Interface Adapter (VIA)</ion-label>
             </ion-item>
-            <div class="ion-padding" slot="content" style="height: 45vh;">
+            <div class="ion-padding" slot="content" >
               <app-via></app-via>
             </div>
           </ion-accordion>
@@ -94,18 +94,5 @@
         </ion-accordion-group>
       </ion-col>
     </ion-row>
-    <!-- <ion-row style="height: 50vh;">
-      <ion-col size="8" style="border-top: .4px solid grey; padding: 1em;">
-        <app-mem-buffer></app-mem-buffer>
-      </ion-col>
-      <ion-col size="4" style="border-top: .4px solid grey; border-left: .4px solid grey; padding: 1em;">
-        
-      </ion-col>
-    </ion-row> -->
   </ion-grid>
 </ion-content>
-
-<!-- <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div> -->

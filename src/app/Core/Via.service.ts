@@ -14,19 +14,36 @@ export class VIADeviceService {
     private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     private isRandom: boolean  = true;
     private sub$: Subscription;
+    private IRQ: boolean = true;
+    private NMI: boolean = false;
 
     constructor(
         private readonly bus: BufferService,
         private readonly cpu: CPUDeviceService
     ){}
 
+    private GetFlag(f: PORTBIT): number{
+        return ((this.IER & f) > 0) ? 1 : 0;
+    }
+
+    private SetFlag(f: PORTBIT, v: boolean | number): void{
+        if (v)
+            this.IER |= f;
+        else
+            this.IER &= ~f;
+    }
+
     irq()
     {
-        if(!!(this.IER & PORTBIT.H)) this.cpu.irq();
+        if(this.GetFlag(PORTBIT.H) === 1){ 
+            if (this.IRQ) this.cpu.irq();
+            if (this.NMI) this.cpu.nmi();
+        }
     }
 
     on()
     {
+        this.SetFlag(PORTBIT.H, 1);
         this.sub$ = this.cpu.clock.subscribe(()=>{
             this.IER    = this.bus.read(0x600d);
             this.IFR    = this.bus.read(0x600c);
@@ -65,9 +82,31 @@ export class VIADeviceService {
         return this.isRandom;
     }
 
-    eneableRandom(value: boolean): void
+    set canRandom(value: boolean)
     {
         this.isRandom = value;
+    }
+
+    get connectToIRQ(): boolean
+    {
+        return this.IRQ;
+    }
+
+    set connectToIRQ(irq: boolean)
+    {
+        this.IRQ = irq;
+        this.NMI = false;
+    }
+
+    get connectToNMI(): boolean
+    {
+        return this.NMI;
+    }
+
+    set connectToNMI(nmi: boolean)
+    {
+        this.NMI = nmi;
+        this.IRQ = false;
     }
 
 }

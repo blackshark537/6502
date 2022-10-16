@@ -1,30 +1,18 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
 import { PORTBIT } from 'src/app/Core/CPU/interfaces';
-import { VIADeviceService } from 'src/app/Core/Via.service';
 
 @Component({
-  selector: 'app-port-a',
-  templateUrl: './port-a.component.html',
-  styleUrls: ['./port-a.component.scss'],
+  selector: 'app-leds',
+  templateUrl: './leds.component.html',
+  styleUrls: ['./leds.component.scss'],
 })
-export class PortAComponent implements OnInit, OnDestroy {
+export class LedsComponent {
   // addr, port
-  private value: [number, number] = [0x00, 0x00];
-  private sub$: Subscription;
-
+  @Input('set')value: [number, number] = [0x00, 0x00];
+  @Input('color') color: string = 'danger';
+  
   constructor(
-    private device: VIADeviceService
   ) { }
-
-  ngOnInit(): void {
-    this.device.on();
-    this.sub$ = this.device.PORTA$.subscribe(val=> this.value = val );
-  }
-
-  ngOnDestroy(): void {
-    if(this.sub$) this.sub$.unsubscribe();    
-  }
 
   get BIT0(): boolean
   {

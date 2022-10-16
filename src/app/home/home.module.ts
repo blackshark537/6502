@@ -9,10 +9,9 @@ import { CodeComponent } from './code/code.component';
 import { MemBufferComponent } from './mem-buffer/mem-buffer.component';
 import { SharedModule } from '../shared/shared.module';
 import { CpuComponent } from './cpu/cpu.component';
-import { PortAComponent } from './port-a/port-a.component';
-import { PortBComponent } from './port-b/port-b.component';
 import { ViaComponent } from './via/via.component';
 import { MemMapComponent } from './mem-map/mem-map.component';
+import { LedsComponent } from './leds/leds.component';
 
 @NgModule({
   imports: [
@@ -29,8 +28,7 @@ import { MemMapComponent } from './mem-map/mem-map.component';
     MemMapComponent,
     CpuComponent,
     ViaComponent,
-    PortAComponent,
-    PortBComponent,
+    LedsComponent,
   ],
 })
 export class HomePageModule {}
