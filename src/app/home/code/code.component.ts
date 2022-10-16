@@ -18,12 +18,6 @@ export class CodeComponent implements OnInit, AfterViewInit {
 ;*                                                            *
 ;*      Welcome To 6502 8-Bits Computer Emulator:             *
 ;*                                                            *
-;*        32 Kilobytes of ROM Max                             *
-;*        .byte save some bytes at compile time.              *
-;*        .word save two bytes at compile time.               *
-;*        .org  set address at compile time.                  *
-;*        .addr get a label address.                          *
-;*                                                            *
 ;**************************************************************
 ;
 ; System Vector Locations
@@ -44,6 +38,10 @@ PROG    = $8000 ; program origin
 .org PROG
 RESTART:
     ; CODE HERE
+    lda #00
+    lda $1001
+    lda #%111
+    lda %0001
 
 .org RESB
 .addr RESTART 
@@ -53,8 +51,9 @@ RESTART:
   code: string = '';
   isSource: boolean = true;
   options: MonacoEditorOptions = {
-    theme: 'vs-dark',
-    language: 'yaml',
+    theme: 'myCoolTheme',//'vs-dark',
+    language: 'asm',
+    value: this.source,
     automaticLayout: true,
   };
 
@@ -85,11 +84,55 @@ RESTART:
       return;
     }
 
+    monaco.languages.register({id: 'asm'});
+    monaco.languages.setMonarchTokensProvider('asm', {
+      tokenizer: {
+        root: [
+          [/\=/, 'assignment'],
+          [/\;.*/, 'comment'],
+          [/\".*/, 'string'],
+          //[/\"[a-zA-Z0-9].*\"/, 'comment'],
+
+          [/\$[0-9a-zA-Z]\w+/, 'values'],
+          [/\#[0-9a-zA-Z]\w+/, 'values'],
+          [/\#%[0-9]\w+/, 'values'],
+          [/\%[0-9]\w+/, 'values'],
+          [/\#/, 'values'],
+          [/\$/, 'values'],
+          [/\%/, 'values'],
+          [/[0-9]\w+/, 'values'],
+
+          [/[A-Za-z].*\:/, 'labels'],
+          [/@[A-Za-z].*\:/, 'labels'],
+
+          [/\.\w+/, 'command'],
+          [/\./, 'command'],
+
+          [/\w+/, 'instruction'],
+        ]
+      }
+    });
+    monaco.editor.defineTheme('myCoolTheme', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'assignment', foreground: 'fefefe' },
+        { token: 'values', foreground: 'ff9009' },
+        { token: 'variables', foreground: '8edbff' },
+        { token: 'instruction', foreground: '8edbff' },
+        { token: 'command', foreground: 'eb445a', fontStyle: 'bold' },
+        { token: 'comment', foreground: '2dd36f' },
+        { token: 'string', foreground: 'ffca22' },
+        { token: 'labels', foreground: 'fefefe' }
+      ],
+      colors: {
+      }
+    });
+    
     this._editor = monaco.editor.create(
       this._editorContainer.nativeElement,
       this.options
     );
-    this._editor.setValue(this.source);
   }
 
   loadSource() {
