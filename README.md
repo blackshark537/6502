@@ -76,7 +76,6 @@ Infinte Count:
 Shift Left With Interrupt:
 [interrupt.s](examples/interrupt.s)
 
-``
 
 ## Installation
 Download or clone repository.
