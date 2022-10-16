@@ -28,8 +28,9 @@ export class Assembler {
    * @return {string} A string representation of the assembled bytes for the
    *   given source.
    */
-  static toHexString (source) {
-    const lir = assemble(parse(source))
+  static toHexString (source, download=false) {
+    const parsedTree = parse(source);
+    const lir = assemble(parsedTree);
     
     const nonLabels = lir.filter(v => (
       v instanceof Instruction ||
@@ -52,10 +53,10 @@ export class Assembler {
       {
         if(i%2===0) _hex += nonLabel.hex.slice(i, i+2) + " ";
       }
-      hex.push(`${nonLabel._address.toString(16)}: ${_hex}`);
+      hex.push( download? _hex : `${nonLabel._address.toString(16)}: ${_hex}` );
     })
     
-    return hex.join('\n');
+    return download? hex.join(' ') : hex.join('\n');
   }
 
   /**

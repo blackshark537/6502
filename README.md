@@ -9,7 +9,7 @@ Emulation of a simple 8-Bits computer based on the famous 6502 chip, it supports
 The 6502 code is a port to typescript from the javidx9 C++ NES Emulator YouTube Serie.
 https://www.youtube.com/watch?v=8XmxKPJDGU0
 
-The assembler code is a port to typescript from the NesHacker 6502 Repo wich has been extended with extra commands to suport label address at compile time.
+The assembler code is a port to typescript from the NesHacker 6502 Repo wich has been extended with extra commands to support label address at compile time.
 https://github.com/NesHacker/6502
 
 ## Commands
@@ -71,10 +71,10 @@ There is 64KB of memory and this is broken into
 ## Code Examples
 
 Infinte Count:
-![alt text](examples/infinite_count.s)
+[infinite_count.s](examples/infinite_count.s)
 
 Shift Left With Interrupt:
-![alt text](examples/interrupt.s)
+[interrupt.s](examples/interrupt.s)
 
 ``
 
