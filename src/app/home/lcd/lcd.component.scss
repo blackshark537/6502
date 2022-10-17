@@ -1,0 +1,36 @@
+ion-card{
+    width: 280px;
+    max-width: 280px;
+}
+
+.lcd-on{
+    background-color: var(--ion-color-success);
+}
+
+.lcd-off{
+    background-color: rgb(3, 33, 3);
+}
+
+#display{
+    color: black;
+    border: none;
+    resize: none;
+    width: 100%;
+    font-size: x-large;
+    font-family: revert;
+    font-weight: bold;
+    padding: 1em;
+}
+
+.dottedText:after
+{
+    content: '';
+    position:absolute;
+    left:0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, transparent 50%),
+    radial-gradient(circle, transparent 20%, white 50%) 30px 30px;
+    background-size:4px 4px;
+}

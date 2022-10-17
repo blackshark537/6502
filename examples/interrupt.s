@@ -36,8 +36,8 @@ restart:
 
     ; set ports A and B as outputs
     lda #%11111111
-    sta DDRB
     sta DDRA
+    sta DDRB
 
     lda #$01
     sta COUNT
@@ -47,9 +47,11 @@ restart:
 ; function to execute when an interrupts occur
 irq_handler:
     pha
-
-    lda COUNT
-    sta PORTB
+    lda #%00000000
+    sta DDRB
+    
+    lda PORTB
+    sta PORTA
     inc COUNT
 
     pla
@@ -63,7 +65,7 @@ shift_l:
 ; infinity loop
 loop:
     jsr shift_l
-    sta PORTA
+    sta $20
     jmp loop 
 
 ; setting interrrupt address of function handler

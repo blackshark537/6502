@@ -10,101 +10,129 @@ import { PORTBIT } from "./CPU/interfaces";
 export class VIADeviceService {
     private IER: number = 0x00;
     private IFR: number = 0x00;
-    private _PORTA$ = new BehaviorSubject<[number,number]>([0x00, 0x00]);
+    private _PORTA$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
-    private isRandom: boolean  = true;
+    private isRandom: boolean = true;
+    private isKeboard: boolean = false;
+    private isLcd: boolean = false;
     private sub$: Subscription;
     private IRQ: boolean = true;
     private NMI: boolean = false;
+    private DDRA: number = 0x00;
+    private DDRB: number = 0x00;
 
     constructor(
         private readonly bus: BufferService,
         private readonly cpu: CPUDeviceService
-    ){}
+    ) { }
 
-    private GetFlag(f: PORTBIT): number{
+    private GetFlag(f: PORTBIT): number {
         return ((this.IER & f) > 0) ? 1 : 0;
     }
 
-    private SetFlag(f: PORTBIT, v: boolean | number): void{
+    private SetFlag(f: PORTBIT, v: boolean | number): void {
         if (v)
             this.IER |= f;
         else
             this.IER &= ~f;
     }
 
-    irq()
-    {
-        if(this.GetFlag(PORTBIT.H) === 1){ 
+    irq() {
+        if (this.GetFlag(PORTBIT.H) === 1) {
             if (this.IRQ) this.cpu.irq();
             if (this.NMI) this.cpu.nmi();
         }
     }
 
-    on()
-    {
+    on() {
         this.SetFlag(PORTBIT.H, 1);
-        this.sub$ = this.cpu.clock.subscribe(()=>{
-            this.IER    = this.bus.read(0x600d);
-            this.IFR    = this.bus.read(0x600c);
+        this.sub$ = this.cpu.clock.subscribe(() => {
+            this.IER = this.bus.read(0x600d);
+            this.IFR = this.bus.read(0x600c);
             const portb = this.bus.read(0x6000);
             const porta = this.bus.read(0x6001);
-            const ddrb  = this.bus.read(0x6002);
-            const ddra  = this.bus.read(0x6003);
+            this.DDRB = this.bus.read(0x6002);
+            this.DDRA = this.bus.read(0x6003);
 
-            if(this.isRandom){
-                const value = Math.floor(Math.random()*0xFF).toString();
-                this.bus.write(0x00FE, parseInt(value,16));
+            if (this.isRandom) {
+                const value = Math.floor(Math.random() * 0xFF).toString();
+                this.bus.write(0x60FE, parseInt(value, 16));
             }
 
-            this._PORTB$.next([ddrb, portb]);
-            this._PORTA$.next([ddra, porta]);
+            this._PORTB$.next([this.DDRB, portb]);
+            this._PORTA$.next([this.DDRA, porta]);
         });
     }
 
-    off()
-    {
-        if(this.sub$) this.sub$.unsubscribe();
+    off() {
+        if (this.sub$) this.sub$.unsubscribe();
     }
 
-    get PORTA$(): Observable<[number, number]>
-    {
+    get PORTA$(): Observable<[number, number]> {
         return this._PORTA$.asObservable();
     }
 
-    get PORTB$(): Observable<[number, number]>
-    {
+    get PORTB$(): Observable<[number, number]> {
         return this._PORTB$.asObservable();
     }
 
-    get canRandom(): boolean
-    {
+    get connectRandomDevice(): boolean {
         return this.isRandom;
     }
 
-    set canRandom(value: boolean)
-    {
+    set connectRandomDevice(value: boolean) {
         this.isRandom = value;
     }
 
-    get connectToIRQ(): boolean
-    {
+    get connectLcd(): boolean {
+        return this.isLcd;
+    }
+    set connectLcd(value: boolean) {
+        this.isLcd = value;
+    }
+
+    get connectKeyboard(): boolean {
+        return this.isKeboard;
+    }
+
+    set connectKeyboard(value: boolean) {
+        this.isKeboard = value;
+        if (this.isKeboard) {
+            document.addEventListener('keydown', ev => {
+                const code = ev.key.charCodeAt(0)
+                this.bus.write(0x6000, code );
+                
+            }, false);
+            document.addEventListener('keypress', ev => {
+                const code = ev.key.charCodeAt(0)
+                this.bus.write(0x6000, code );
+            }, false);
+            document.addEventListener('keyup', ev => {
+                const code = ev.key.charCodeAt(0)
+                this.bus.write(0x6000, code );
+                this.cpu.irq();
+            }, false);
+        } else {
+            document.removeEventListener('keydown', null, false);
+            document.removeEventListener('keypress', null, false);
+            document.removeEventListener('keyup', null, false);
+        }
+    }
+
+    get connectToIRQ(): boolean {
         return this.IRQ;
     }
 
-    set connectToIRQ(irq: boolean)
-    {
+    set connectToIRQ(irq: boolean) {
         this.IRQ = irq;
         this.NMI = false;
     }
 
-    get connectToNMI(): boolean
-    {
+    get connectToNMI(): boolean {
         return this.NMI;
     }
 
-    set connectToNMI(nmi: boolean)
-    {
+    set connectToNMI(nmi: boolean) {
         this.NMI = nmi;
         this.IRQ = false;
     }

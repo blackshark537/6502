@@ -57,7 +57,7 @@
             <ion-item slot="header" color="light">
               <ion-label>MEMORY</ion-label>
             </ion-item>
-            <div class="ion-padding" slot="content">
+            <div class="ion-padding sm-width" slot="content">
               <app-mem-buffer></app-mem-buffer>
             </div>
           </ion-accordion>
@@ -65,8 +65,16 @@
             <ion-item slot="header" color="light">
               <ion-label>MEMORY LAYOUT</ion-label>
             </ion-item>
-            <div class="ion-padding" slot="content">
+            <div class="ion-padding sm-width" slot="content">
               <app-mem-map></app-mem-map>
+            </div>
+          </ion-accordion>
+          <ion-accordion value="schematic">
+            <ion-item slot="header" color="light">
+              <ion-label>SCHEMATIC</ion-label>
+            </ion-item>
+            <div class="ion-padding sm-width" slot="content">
+              <app-schematic></app-schematic>
             </div>
           </ion-accordion>
         </ion-accordion-group>

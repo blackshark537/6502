@@ -37,6 +37,18 @@ export enum PORTBIT
     H = (1 << 7),	// Bit 7
 };
 
+export enum HD44780
+{
+    A = (1 << 0),	// Selects registers. 0: Instruction register (for write) 1: Data register
+    B = (1 << 1),	// Selects read or write. 0: Write 1: Read
+    C = (1 << 2),	// Starts data read/write
+    D = (1 << 3),	// Bit 3
+    N = (1 << 4),	// Bit 4
+    E = (1 << 5),	// Bit 5
+    RW = (1 << 6),	// Bit 6
+    RS = (1 << 7),	// Bit 7
+};
+
 export interface DeviceInfo { device: string; fabricant: string; year: string; clock: string };
 
 export interface DeviceState{

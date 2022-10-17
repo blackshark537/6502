@@ -12,6 +12,8 @@ import { CpuComponent } from './cpu/cpu.component';
 import { ViaComponent } from './via/via.component';
 import { MemMapComponent } from './mem-map/mem-map.component';
 import { LedsComponent } from './leds/leds.component';
+import { LcdComponent } from './lcd/lcd.component';
+import { SchematicComponent } from './schematic/schematic.component';
 
 @NgModule({
   imports: [
@@ -26,9 +28,11 @@ import { LedsComponent } from './leds/leds.component';
     CodeComponent, 
     MemBufferComponent, 
     MemMapComponent,
+    SchematicComponent,
     CpuComponent,
     ViaComponent,
     LedsComponent,
+    LcdComponent,
   ],
 })
 export class HomePageModule {}

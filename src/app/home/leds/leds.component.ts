@@ -9,6 +9,7 @@ import { PORTBIT } from 'src/app/Core/CPU/interfaces';
 export class LedsComponent {
   // addr, port
   @Input('set')value: [number, number] = [0x00, 0x00];
+  @Input('label') label = 'LEDS'
   @Input('color') color: string = 'danger';
   
   constructor(

@@ -15,36 +15,32 @@ declare var monaco: any;
 })
 export class CodeComponent implements OnInit, AfterViewInit {
   source: string = `;**************************************************************
-;*                                                            *
-;*      Welcome To 6502 8-Bits Computer Emulator:             *
-;*                                                            *
-;**************************************************************
-;
-; System Vector Locations
-NMI     = $FFFA ; non maskable interrupt address
-RESB    = $FFFC ; restart address
-IRQ     = $FFFE ; interrupt address
-
-PORTB   = $6000 ; via port B address
-PORTA   = $6001 ; via port A address
-DDRB    = $6002 ; via port B In/Out Mode address
-DDRA    = $6003 ; via port A In/Out Mode address
-
-IFR     = $600d ; via Interrupt Flag Register
-IER     = $600e ; via Interrupt Enable Register
-
-PROG    = $8000 ; program origin
-
-.org PROG
-RESTART:
-    ; CODE HERE
-    lda #00
-    lda $1001
-    lda #%111
-    lda %0001
-
-.org RESB
-.addr RESTART 
+  ;*                                                            *
+  ;*      Welcome To 6502 8-Bits Computer Emulator:             *
+  ;*                                                            *
+  ;**************************************************************
+  ;
+  ; System Vector Locations
+  NMI     = $FFFA ; non maskable interrupt address
+  RESB    = $FFFC ; restart address
+  IRQ     = $FFFE ; interrupt address
+  
+  PORTB   = $6000 ; via port B address
+  PORTA   = $6001 ; via port A address
+  DDRB    = $6002 ; via port B In/Out Mode address
+  DDRA    = $6003 ; via port A In/Out Mode address
+  
+  IFR     = $600d ; via Interrupt Flag Register
+  IER     = $600e ; via Interrupt Enable Register
+  
+  PROG    = $8000 ; program origin
+  
+  .org PROG
+  RESTART:
+  ; CODE HERE
+  
+  .org RESB
+  .addr RESTART   
 `;
 
   title: string = 'CODE';

@@ -1,28 +1,41 @@
 <h2>6522</h2>
-<app-leds [set]="device.PORTA$ | async" ></app-leds>
-<app-leds [set]="device.PORTB$ | async" color="warning"></app-leds>
+<app-lcd *ngIf="device.connectLcd" ></app-lcd>
+<app-leds *ngIf="!device.connectLcd" [set]="device.PORTA$ | async" label="PORT A" color="success"></app-leds>
+<app-leds *ngIf="!device.connectKeyboard" [set]="device.PORTB$ | async" label="PORT B" color="warning"></app-leds>
 
 <ion-accordion-group [multiple]="true" style="margin-top: 2em;">
-    <ion-accordion value="irq" >
+    <ion-accordion value="settings" >
       <ion-item slot="header" color="light">
         <ion-label>Settings</ion-label>
       </ion-item>
       <div class="ion-padding" slot="content">
+        <ion-note>
+          <h5>Devices</h5>
+        </ion-note>
         <ion-item>
-            <ion-checkbox [(ngModel)]="device.canRandom" slot="start"></ion-checkbox>
-            <ion-label>Activate Random Number Generator</ion-label>
+            <ion-checkbox [(ngModel)]="device.connectRandomDevice" slot="start"></ion-checkbox>
+            <ion-label>Attach Random Number Generator</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-checkbox [(ngModel)]="device.connectKeyboard" slot="start"></ion-checkbox>
+          <ion-label>Attach Keyboard (uses 6502 IRQ And PORTB)</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-checkbox [(ngModel)]="device.connectLcd" slot="start"></ion-checkbox>
+          <ion-label>Attach LCD (uses PORTB, PA7 PA6 PA5)</ion-label>
         </ion-item>
         <ion-item>
             <ion-checkbox [(ngModel)]="device.connectToIRQ" slot="start"></ion-checkbox>
-            <ion-label>Connets to 6502 IRQ PIN</ion-label>
+            <ion-label>Attach 6522 IRQ to 6502 IRQ PIN</ion-label>
         </ion-item>
         <ion-item>
             <ion-checkbox [(ngModel)]="device.connectToNMI" slot="start"></ion-checkbox>
-            <ion-label>Connets to 6502 NMI PIN</ion-label>
+            <ion-label>Attach 6522 IRQ to 6502 NMI PIN</ion-label>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
             <ion-button fill="solid" (click)="device.irq()">Interrupt</ion-button>
-        </ion-item>
+        </ion-item> -->
       </div>
     </ion-accordion>
+
 </ion-accordion-group>
