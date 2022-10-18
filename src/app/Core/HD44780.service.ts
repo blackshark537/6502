@@ -10,9 +10,8 @@ export class LcdDeviceService extends Device {
   private busy: boolean = false;
   private interval: any
 
-  //private busy: boolean = false;
   /**
-   * LCD On/Off
+   *  LCD On/Off
    *  true: On false: Off
    */
   private isOn: boolean = false;
