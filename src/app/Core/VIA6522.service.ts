@@ -1,10 +1,12 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Device } from "./interfaces/Device";
 import { CPU6502 } from "./CPU6502.service";
 import { PORTBIT } from "./interfaces";
 import { LcdDeviceService } from "./HD44780.service";
 
+
+// Needs to be refactorized, devices like keyboard and lcd are extremly couple.
 @Injectable({
     providedIn: 'root'
 })
@@ -26,8 +28,7 @@ export class VIADeviceService extends Device{
 
     private _PORTA$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
-    private sub$: Subscription;
-
+    
     constructor(
         private readonly lcd: LcdDeviceService,
     ) { 
