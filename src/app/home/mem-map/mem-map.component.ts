@@ -5,10 +5,8 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './mem-map.component.html',
   styleUrls: ['./mem-map.component.scss'],
 })
-export class MemMapComponent implements OnInit {
+export class MemMapComponent {
 
   constructor() { }
-
-  ngOnInit() {}
 
 }

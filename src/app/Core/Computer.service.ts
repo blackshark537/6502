@@ -1,24 +1,26 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, interval, Observable, Subscription } from "rxjs";
-import { BufferService } from "./Buffer.service";
-import { CPU } from "./CPU/CPU6502";
-import { DeviceInfo, DeviceState } from "./CPU/interfaces";
+import { interval, Observable, Subscription } from "rxjs";
+import { MemoryService } from "./Memory.service";
+import { CPU6502 } from "./CPU6502.service";
+import { DeviceInfo, DeviceState } from "./interfaces";
+import { VIADeviceService } from "./VIA6522.service";
 
 @Injectable({
     providedIn: 'root'
 })
-export class CPUDeviceService {
+export class ComputerService {
     private speed: number = 3;
-    private cpu: CPU;
-    private sub$: Subscription;
 
+    private sub$: Subscription;
     public interval$: Observable<any>;
 
     constructor(
-        private buffer: BufferService
+        private cpu: CPU6502,
+        private buffer: MemoryService,
+        private via: VIADeviceService
     ) { 
-        this.cpu = CPU.getInstance();
-        this.cpu.connectBus(this.buffer);
+        this.cpu.connectDevice(this.buffer);
+        this.cpu.connectDevice(this.via);
         this.interval$ = interval(this.speed);
     }
 
@@ -51,7 +53,6 @@ export class CPUDeviceService {
             this.cpu.clock();
             this.buffer.load();
             if(this.cpu.isComplete) this.stop();
-            //if (!this.isStop) requestAnimationFrame(frame);
         });
     }
 

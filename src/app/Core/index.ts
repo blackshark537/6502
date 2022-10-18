@@ -1,4 +1,4 @@
-export * from './Buffer.service';
-export * from './Cpu.service';
-export * from './Via.service';
+export * from './Memory.service';
+export * from './Computer.service';
+export * from './VIA6522.service';
 export * from './MonacoEditor.service';

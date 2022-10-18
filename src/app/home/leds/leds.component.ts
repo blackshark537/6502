@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PORTBIT } from 'src/app/Core/CPU/interfaces';
+import { PORTBIT } from 'src/app/Core/interfaces';
 
 @Component({
   selector: 'app-leds',

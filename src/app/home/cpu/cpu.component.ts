@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CPUDeviceService } from 'src/app/Core';
+import { ComputerService } from 'src/app/Core';
 
 @Component({
   selector: 'app-cpu',
   templateUrl: './cpu.component.html',
   styleUrls: ['./cpu.component.scss'],
 })
-export class CpuComponent implements OnInit {
+export class CpuComponent {
 
   constructor(
-    public device: CPUDeviceService
+    public device: ComputerService
   ) { }
-
-  ngOnInit() {}
 
 }

@@ -6,14 +6,10 @@ import { VIADeviceService } from 'src/app/Core';
   templateUrl: './via.component.html',
   styleUrls: ['./via.component.scss'],
 })
-export class ViaComponent implements OnInit {
+export class ViaComponent {
 
   constructor(
     public device: VIADeviceService
   ) { }
-
-  ngOnInit(): void {
-    this.device.on();
-  }
 
 }

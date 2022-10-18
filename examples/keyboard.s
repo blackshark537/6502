@@ -124,6 +124,7 @@ IRQ_HANDLER:
     LDA #%11111111 ; portb as output
     STA DDRB
     JSR LCD_HOME
+    JSR LCD_CLR
     RTI
 
 @CONTINUE:
@@ -134,6 +135,7 @@ IRQ_HANDLER:
 
     RTI
 
-.org RESB
+.org NMI
+.addr IRQ_HANDLER
 .addr RESTART
 .addr IRQ_HANDLER

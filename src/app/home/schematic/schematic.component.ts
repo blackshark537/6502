@@ -5,10 +5,8 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './schematic.component.html',
   styleUrls: ['./schematic.component.scss'],
 })
-export class SchematicComponent implements OnInit {
+export class SchematicComponent {
 
   constructor() { }
-
-  ngOnInit() {}
 
 }

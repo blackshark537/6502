@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { Bus } from "./CPU/BUS";
+import { Device } from "./interfaces/Device";
 
 @Injectable({
     providedIn: 'root'
 })
-export class BufferService implements Bus {
+export class MemoryService extends Device {
    
     private ram: Uint8Array;
     private bu$ = new BehaviorSubject<{[addr: string]: string[]}>({})
@@ -13,6 +13,7 @@ export class BufferService implements Bus {
     private to=0x00ff;
 
     constructor() {
+        super(MemoryService.name);
         this.init();
     }
 
@@ -106,5 +107,13 @@ export class BufferService implements Bus {
         }
 
         throw new Error(`Error: Address is out of  Bound`);
+    }
+
+    setParent(parent: Device): void {
+        
+    }
+
+    connectDevice(device: Device): void {
+        
     }
 }

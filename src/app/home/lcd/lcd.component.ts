@@ -1,23 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { LcdService } from 'src/app/Core/Lcd.service';
+import { LcdDeviceService } from 'src/app/Core/HD44780.service';
 
 @Component({
   selector: 'app-lcd',
   templateUrl: './lcd.component.html',
   styleUrls: ['./lcd.component.scss'],
 })
-export class LcdComponent implements OnInit, OnDestroy {
+export class LcdComponent {
   
   constructor(
-    public lcdCtrl: LcdService
+    public lcdCtrl: LcdDeviceService
   ){}
-
-  ngOnInit(): void {
-    this.lcdCtrl.init();  
-  }
-
-  ngOnDestroy(): void {
-      this.lcdCtrl.destroy();
-  }
 
 }

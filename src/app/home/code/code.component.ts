@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { MonacoEditorService } from 'src/app/Core';
 import { first } from 'rxjs/operators';
 import { MonacoEditor, MonacoEditorOptions } from 'ng-monaco-editor';
-import { BufferService } from 'src/app/Core';
+import { MemoryService } from 'src/app/Core';
 import { AssemblerService } from 'src/app/Assembler';
 import { ToastController } from '@ionic/angular';
 
@@ -137,7 +137,7 @@ PRINT:
   constructor(
     private toastCtrl: ToastController,
     private monacoEditorService: MonacoEditorService,
-    private buffer: BufferService,
+    private buffer: MemoryService,
     private assembler: AssemblerService
   ) { }
 

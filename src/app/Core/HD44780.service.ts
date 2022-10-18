@@ -1,13 +1,15 @@
 import { Injectable } from "@angular/core";
-import { HD44780 } from "./CPU/interfaces";
+import { Device } from "./interfaces/Device";
+import { HD44780 } from "./interfaces";
 
 @Injectable({
   providedIn: 'root'
 })
-export class LcdService {
-  private _chars: Array<string>;
+export class LcdDeviceService extends Device {
+  private _chars: Array<string> = new Array(32);;
   private busy: boolean = false;
   private interval: any
+
   //private busy: boolean = false;
   /**
    * LCD On/Off
@@ -40,6 +42,9 @@ export class LcdService {
    */
   private hi = 0x02;
 
+  /**
+   * Cursor pointer
+   */
   private cursor: number = 0;
 
   /**     MSB
@@ -68,16 +73,16 @@ export class LcdService {
   commands = {
     0x01: 'clear'
   }
-  constructor() { }
-
-  init(): void {
-    this._chars = new Array(32);
+  constructor() { 
+    super(LcdDeviceService.name);
   }
 
-  notify(data: number, cmd: number)
-  {
-    console.log(this.cursor);
+  read(address: number): number {
+      return this.data;
+  }
 
+  write(data: number, cmd: number)
+  {
     this.cmd = cmd;
 
     if (
@@ -85,10 +90,14 @@ export class LcdService {
       this.GetCmdFlag(HD44780.E) === 1  &&
       !this.busy
     ) {
-      // It's instruction
-      this.data = data;
+      
+      // display is busy
       this.busy = true;
       setTimeout(_=> this.busy = false, 10);
+
+      this.data = data;
+
+      // It's instruction
       if (this.GetCmdFlag(HD44780.RS) === 0) {
 
         if (
@@ -123,10 +132,6 @@ export class LcdService {
         this.print();
       }
     }
-  }
-
-  destroy(): void {
-    
   }
 
   private GetDataFlag(f: HD44780): number {

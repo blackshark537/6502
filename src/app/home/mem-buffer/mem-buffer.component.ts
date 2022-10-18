@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BufferService } from 'src/app/Core';
+import { MemoryService } from 'src/app/Core';
 
 @Component({
   selector: 'app-mem-buffer',
@@ -8,28 +8,27 @@ import { BufferService } from 'src/app/Core';
 })
 export class MemBufferComponent implements OnInit {
   private BUS: {[address: string]: string[]};
-  private colors = [ 'dark', 'primary', 'success', 'warning', 'danger','secundary', 'tertiary']
-  LSB_ADDRESS: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e','f'];
-  MSB_ADDRESS: string[] = [];
+  LSB_COLS: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e','f'];
+  MSB_COLS: string[] = [];
   FROM: string = '0000';
 
   constructor(
-    private readonly buffer: BufferService
+    private readonly buffer: MemoryService
   ) { }
 
   ngOnInit(): void 
   {
-    this.buffer.getBus().subscribe(bus=>{
-      this.BUS = bus;
-      this.MSB_ADDRESS = Object.keys(bus);
+    this.buffer.getBus().subscribe(BUS=>{
+      this.MSB_COLS = Object.keys(BUS);
+      this.BUS = BUS;
     });
   }
 
   load(): void
   {
     let from = parseInt(this.FROM, 16);
-    let to =  from + 0xff;
-    this.buffer.FromTo(from, to);
+
+    this.buffer.FromTo(from, from + 0xff);
     this.buffer.load();
   }
 
@@ -38,15 +37,9 @@ export class MemBufferComponent implements OnInit {
     this.buffer.clear();
   }
 
-  getCols(hi_address: string): string[]
+  getCols(address_col: string): string[]
   {
-    return this.BUS[hi_address];
-  }
-
-  getColor(value: string): string
-  {
-    const indx = parseInt(value) % this.colors.length;
-    return this.colors[indx];
+    return this.BUS[address_col];
   }
 
   get TO(): string
