@@ -4,7 +4,7 @@ ion-card{
 }
 
 .lcd-on{
-    background-color: var(--ion-color-success);
+    background-color: var(--ion-color-warning);
 }
 
 .lcd-off{
@@ -16,6 +16,7 @@ ion-card{
     border: none;
     resize: none;
     width: 100%;
+    
     font-size: x-large;
     font-family: revert;
     font-weight: bold;

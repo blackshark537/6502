@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { BufferService } from "./Buffer.service";
 import { CPUDeviceService } from "./Cpu.service";
 import { PORTBIT } from "./CPU/interfaces";
+import { LcdService } from "./Lcd.service";
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,7 @@ export class VIADeviceService {
     private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     private isRandom: boolean = true;
     private isKeboard: boolean = false;
-    private isLcd: boolean = false;
+    private isLcd: boolean = true;
     private sub$: Subscription;
     private IRQ: boolean = true;
     private NMI: boolean = false;
@@ -23,7 +24,8 @@ export class VIADeviceService {
 
     constructor(
         private readonly bus: BufferService,
-        private readonly cpu: CPUDeviceService
+        private readonly cpu: CPUDeviceService,
+        private readonly lcd: LcdService,
     ) { }
 
     private GetFlag(f: PORTBIT): number {
@@ -54,6 +56,11 @@ export class VIADeviceService {
             this.DDRB = this.bus.read(0x6002);
             this.DDRA = this.bus.read(0x6003);
 
+            if(this.isLcd)
+            {
+                this.lcd.notify((portb & this.DDRB), (porta & this.DDRA));
+            }
+
             if (this.isRandom) {
                 const value = Math.floor(Math.random() * 0xFF).toString();
                 this.bus.write(0x60FE, parseInt(value, 16));
@@ -66,6 +73,11 @@ export class VIADeviceService {
 
     off() {
         if (this.sub$) this.sub$.unsubscribe();
+    }
+
+    clock()
+    {
+        
     }
 
     get PORTA$(): Observable<[number, number]> {
@@ -99,16 +111,15 @@ export class VIADeviceService {
         this.isKeboard = value;
         if (this.isKeboard) {
             document.addEventListener('keydown', ev => {
-                const code = ev.key.charCodeAt(0)
+                const code = ev.keyCode
                 this.bus.write(0x6000, code );
-                
             }, false);
             document.addEventListener('keypress', ev => {
-                const code = ev.key.charCodeAt(0)
+                const code = 0x0a
                 this.bus.write(0x6000, code );
             }, false);
             document.addEventListener('keyup', ev => {
-                const code = ev.key.charCodeAt(0)
+                const code = ev.keyCode
                 this.bus.write(0x6000, code );
                 this.cpu.irq();
             }, false);

@@ -19,10 +19,8 @@ IER     = $600e ; via Interrupt Enable Register
 
 PROG    = $8000 ; program origin
 
-E        = #%00100000
-RS       = #%10000000
-
-COUNT   = $00
+E        = #%10000000
+RS       = #%00100000
 
 .org PROG
 RESTART:
@@ -74,8 +72,17 @@ LCD_CLR:
     STA PORTA
     RTS
 
-NEXT:
+CURSOR_R:
     LDA #%00000110
+    STA PORTB
+    LDA E
+    STA PORTA
+    LDA #$00
+    STA PORTA
+    RTS
+  
+CURSOR_L:
+    LDA #%00000100
     STA PORTB
     LDA E
     STA PORTA
@@ -90,18 +97,41 @@ PRINT:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR CURSOR_R
     RTS
+
 
 IRQ_HANDLER:
     ; read key
     LDA #%00000000 ;portb as input
     STA DDRB
     LDX PORTB
-    NOP
+
+    ; IF KEYCODE == #$08
+@DELETE:
+    TXA
+    CMP #$08
+    BNE @HOME
+    LDA #%11111111 ; portb as output
+    STA DDRB
+    JSR CURSOR_L
+    RTI
+
+@HOME:
+    TXA
+    CMP #$C0
+    BNE @CONTINUE
+    LDA #%11111111 ; portb as output
+    STA DDRB
+    JSR LCD_HOME
+    RTI
+
+@CONTINUE:
     LDA #%11111111 ; portb as output
     STA DDRB
     TXA
     JSR PRINT
+
     RTI
 
 .org RESB

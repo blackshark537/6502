@@ -51,8 +51,12 @@ irq_handler:
     sta DDRB
     
     lda PORTB
-    sta PORTA
-    inc COUNT
+    
+    cmp #$08  ; if keycode == 0x08 count += 1
+    bne @KLK
+      inc COUNT
+@KLK: sta PORTA
+    
 
     pla
     rti
@@ -64,8 +68,7 @@ shift_l:
 
 ; infinity loop
 loop:
-    jsr shift_l
-    sta $20
+    nop
     jmp loop 
 
 ; setting interrrupt address of function handler

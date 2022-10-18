@@ -19,8 +19,8 @@ IER     = $600e ; via Interrupt Enable Register
 
 PROG    = $8000 ; program origin
 
-E        = #%00100000
-RS       = #%10000000
+E        = #%10000000
+RS       = #%00100000
 
 COUNT   = $00
 
@@ -37,7 +37,6 @@ CLI ; ENEABLE INTERRUPT
 JSR LCD_ON
 JSR LCD_CLR
 JSR LCD_HOME
-LDY #$0B
 LDX #$00
 JMP @LOOP
 
@@ -46,10 +45,10 @@ JMP @LOOP
     JSR PRINT
     JSR NEXT
     INX
-    DEY
-    TYA
+    TXA
+    CMP #16
     BNE @LOOP
-    JMP RESTART
+    ;JMP RESTART
     
 
 

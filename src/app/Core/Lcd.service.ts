@@ -1,19 +1,14 @@
 import { Injectable } from "@angular/core";
-import { Subscription } from "rxjs";
-import { throttleTime } from "rxjs/operators";
-import { CPUDeviceService } from "./Cpu.service";
 import { HD44780 } from "./CPU/interfaces";
-import { VIADeviceService } from "./Via.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LcdService {
-  private sub$1: Subscription;
-  private sub$2: Subscription;
   private _chars: Array<string>;
+  private busy: boolean = false;
   private interval: any
-  private speed = 10;
+  //private busy: boolean = false;
   /**
    * LCD On/Off
    *  true: On false: Off
@@ -73,68 +68,65 @@ export class LcdService {
   commands = {
     0x01: 'clear'
   }
-  constructor(
-    private device: VIADeviceService,
-    cpu: CPUDeviceService
-  ) { 
-    this.speed = cpu.sync;
-  }
+  constructor() { }
 
   init(): void {
     this._chars = new Array(32);
+  }
 
-    this.sub$1 = this.device.PORTA$.pipe(
-      throttleTime(this.speed),
-    ).subscribe(buffer => {
-      this.cmd = (buffer[0] & buffer[1]);
-      if (
-        this.GetCmdFlag(HD44780.RW) === 0 &&
-        this.GetCmdFlag(HD44780.E) === 1
-      ) {
+  notify(data: number, cmd: number)
+  {
+    console.log(this.cursor);
 
-        // It's instruction
-        if (this.GetCmdFlag(HD44780.RS) === 0) {
+    this.cmd = cmd;
 
-          if (
-            this.GetDataFlag(HD44780.A) === 1 &&
-            this.GetDataFlag(HD44780.B) === 0 &&
-            this.GetDataFlag(HD44780.C) === 0 &&
-            this.GetDataFlag(HD44780.D) === 0
-          ) this.clear();
+    if (
+      this.GetCmdFlag(HD44780.RW) === 0 &&
+      this.GetCmdFlag(HD44780.E) === 1  &&
+      !this.busy
+    ) {
+      // It's instruction
+      this.data = data;
+      this.busy = true;
+      setTimeout(_=> this.busy = false, 10);
+      if (this.GetCmdFlag(HD44780.RS) === 0) {
 
-          if (
-            this.GetDataFlag(HD44780.B) === 1 &&
-            this.GetDataFlag(HD44780.C) === 0 &&
-            this.GetDataFlag(HD44780.D) === 0
-          ) this.returnHome();
+        if (
+          this.GetDataFlag(HD44780.A) === 1 &&
+          this.GetDataFlag(HD44780.B) === 0 &&
+          this.GetDataFlag(HD44780.C) === 0 &&
+          this.GetDataFlag(HD44780.D) === 0
+        ) this.clear();
 
-          if (
-            this.GetDataFlag(HD44780.C) === 1 &&
-            this.GetDataFlag(HD44780.D) === 0
-          ) this.moveCursor(!!this.GetDataFlag(HD44780.B));
+        if (
+          this.GetDataFlag(HD44780.B) === 1 &&
+          this.GetDataFlag(HD44780.C) === 0 &&
+          this.GetDataFlag(HD44780.D) === 0
+        ) this.returnHome();
 
-          if (
-            this.GetDataFlag(HD44780.D) === 1
-          ) {
-            this.blinkCursor(!!this.GetDataFlag(HD44780.A));
-            this.showCursor(!!this.GetDataFlag(HD44780.B));
-            this.displayOn(!!this.GetDataFlag(HD44780.C));
-          }
-        }
-        else {
-          this.print();
+        if (
+          this.GetDataFlag(HD44780.A) === 0 &&
+          this.GetDataFlag(HD44780.B) === 1 &&
+          this.GetDataFlag(HD44780.C) === 1 &&
+          this.GetDataFlag(HD44780.D) === 0
+        ) this.moveCursor(!!this.GetDataFlag(HD44780.B));
+
+        if (
+          this.GetDataFlag(HD44780.D) === 1
+        ) {
+          this.blinkCursor(!!this.GetDataFlag(HD44780.A));
+          this.showCursor(!!this.GetDataFlag(HD44780.B));
+          this.displayOn(!!this.GetDataFlag(HD44780.C));
         }
       }
-    });
-
-    this.sub$2 = this.device.PORTB$.subscribe(buffer => {
-      this.data = (buffer[0] & buffer[1]);
-    });
+      else {
+        this.print();
+      }
+    }
   }
 
   destroy(): void {
-    if (this.sub$1) this.sub$1.unsubscribe();
-    if (this.sub$2) this.sub$2.unsubscribe();
+    
   }
 
   private GetDataFlag(f: HD44780): number {
@@ -152,7 +144,7 @@ export class LcdService {
    * command 0x01
    */
   private clear() {
-    this._chars.fill('');
+    this._chars = new Array(32);
   }
 
   /**
@@ -174,8 +166,8 @@ export class LcdService {
    * Command 0x07 Display Shift R
    */
   private moveCursor(direction = true) {
-    direction ? this.cursor += 1 : this.cursor -= 1;
-    if (this.cursor >= 16) this.cursor = 0;
+    direction ? this.cursor += .5 : this.cursor -= .5;
+    if (this.cursor >= 17) this.cursor = 0;
     if (this.cursor < 0) this.cursor = 16;
   }
 
@@ -200,7 +192,8 @@ export class LcdService {
 
       let blink = false;
       this.interval = setInterval(() => {
-        blink ? this._chars[this.cursor] = '_' : this._chars[this.cursor] = '';
+        let temp = this._chars[this.cursor];
+        blink ? this._chars[this.cursor] = '_' : this._chars[this.cursor] = temp;
         blink = !blink;
       }, 800);
     }
@@ -227,7 +220,8 @@ export class LcdService {
     const char = this.charCodes[this.lo][this.hi];
 
     if (!!char) {
-      this._chars[this.cursor] = char
+      this._chars[this.cursor] = char;
+      //this.moveCursor(true);
     }
   }
 

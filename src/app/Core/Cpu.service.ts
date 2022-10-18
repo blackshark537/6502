@@ -1,26 +1,25 @@
 import { Injectable } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { BufferService } from "./Buffer.service";
 import { CPU } from "./CPU/CPU6502";
 import { DeviceInfo, DeviceState } from "./CPU/interfaces";
-import { interval } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CPUDeviceService {
-    private speed: number = 5;
+    private speed: number = 3;
     private cpu: CPU;
-    private sub$: Subscription;
+    private isStop: boolean = false;
 
-    public interval$: Observable<number>;
+    public interval$ = new BehaviorSubject(0);
 
     constructor(
         private buffer: BufferService
     ) { 
         this.cpu = CPU.getInstance();
         this.cpu.connectBus(this.buffer);
-        this.interval$ = interval(this.speed);
+        //this.interval$ = interval(this.speed);
     }
 
     get vendor(): DeviceInfo
@@ -36,7 +35,7 @@ export class CPUDeviceService {
 
     get clock(): Observable<number>
     {
-        return this.interval$;
+        return this.interval$.asObservable();
     }
 
     get sync(): number
@@ -46,18 +45,22 @@ export class CPUDeviceService {
 
     run()
     {
-        this.stop();
+        this.isStop = false;
         this.cpu.reset();
-        this.sub$ = this.interval$.subscribe(()=>{ 
+        let frame = () =>
+        {
             this.cpu.clock();
             this.buffer.load();
+            this.interval$.next(1);
             if(this.cpu.isComplete) this.stop();
-        });
+            if (!this.isStop) requestAnimationFrame(frame);
+        }
+        frame();
     }
 
     stop()
     {
-        if(this.sub$) this.sub$.unsubscribe();
+        this.isStop = true;
     }
 
     tick()
