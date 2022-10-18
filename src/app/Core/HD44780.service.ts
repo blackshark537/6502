@@ -222,7 +222,7 @@ export class LcdDeviceService extends Device {
 
     if (!!char) {
       this._chars[this.cursor] = char;
-      //this.moveCursor(true);
+      this.moveCursor(true);
     }
   }
 

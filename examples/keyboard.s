@@ -97,7 +97,7 @@ PRINT:
     STA PORTA
     LDA #$00
     STA PORTA
-    JSR CURSOR_R
+    ;JSR CURSOR_R
     RTS
 
 

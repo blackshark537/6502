@@ -60,7 +60,7 @@ JMP @LOOP
 @LOOP:
     LDA $200,X
     JSR PRINT
-    JSR NEXT
+    ;JSR NEXT
     INX
     TXA
     CMP #16
