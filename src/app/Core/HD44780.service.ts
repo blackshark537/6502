@@ -69,9 +69,6 @@ export class LcdDeviceService extends Device {
     ['?', '?', '/', '?', 'O', '_', 'o', '<', '?', '?', '?', '-', '?', '?', '?', '?'],
   ];
 
-  commands = {
-    0x01: 'clear'
-  }
   constructor() { 
     super(LcdDeviceService.name);
   }
