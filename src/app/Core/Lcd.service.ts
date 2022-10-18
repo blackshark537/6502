@@ -166,7 +166,7 @@ export class LcdService {
    * Command 0x07 Display Shift R
    */
   private moveCursor(direction = true) {
-    direction ? this.cursor += .5 : this.cursor -= .5;
+    direction ? this.cursor += 1 : this.cursor -= 1;
     if (this.cursor >= 17) this.cursor = 0;
     if (this.cursor < 0) this.cursor = 16;
   }

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, interval, Observable, Subscription } from "rxjs";
 import { BufferService } from "./Buffer.service";
 import { CPU } from "./CPU/CPU6502";
 import { DeviceInfo, DeviceState } from "./CPU/interfaces";
@@ -10,16 +10,16 @@ import { DeviceInfo, DeviceState } from "./CPU/interfaces";
 export class CPUDeviceService {
     private speed: number = 3;
     private cpu: CPU;
-    private isStop: boolean = false;
+    private sub$: Subscription;
 
-    public interval$ = new BehaviorSubject(0);
+    public interval$: Observable<any>;
 
     constructor(
         private buffer: BufferService
     ) { 
         this.cpu = CPU.getInstance();
         this.cpu.connectBus(this.buffer);
-        //this.interval$ = interval(this.speed);
+        this.interval$ = interval(this.speed);
     }
 
     get vendor(): DeviceInfo
@@ -35,7 +35,7 @@ export class CPUDeviceService {
 
     get clock(): Observable<number>
     {
-        return this.interval$.asObservable();
+        return this.interval$;
     }
 
     get sync(): number
@@ -45,22 +45,19 @@ export class CPUDeviceService {
 
     run()
     {
-        this.isStop = false;
+        this.stop();
         this.cpu.reset();
-        let frame = () =>
-        {
+        this.sub$ = this.interval$.subscribe(_=>{
             this.cpu.clock();
             this.buffer.load();
-            this.interval$.next(1);
             if(this.cpu.isComplete) this.stop();
-            if (!this.isStop) requestAnimationFrame(frame);
-        }
-        frame();
+            //if (!this.isStop) requestAnimationFrame(frame);
+        });
     }
 
     stop()
     {
-        this.isStop = true;
+        if(this.sub$) this.sub$.unsubscribe();
     }
 
     tick()
