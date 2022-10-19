@@ -1,6 +1,17 @@
 ion-card{
     width: 280px;
     max-width: 280px;
+    ion-card-content{
+        padding: 0px;
+        margin-left: 1em;
+        margin-top: 0.3em;
+    }
+    
+    ion-card-subtitle{
+        margin-left: 1em;
+        margin-top: 0.5em;
+        padding: 0;
+    }
 }
 
 .lcd-on{
