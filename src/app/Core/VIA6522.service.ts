@@ -5,7 +5,6 @@ import { CPU6502 } from "./CPU6502.service";
 import { PORTBIT } from "./interfaces";
 import { LcdDeviceService } from "./HD44780.service";
 
-
 // Needs to be refactorized, devices like keyboard and lcd are extremly couple.
 @Injectable({
     providedIn: 'root'
@@ -111,15 +110,16 @@ export class VIADeviceService extends Device{
     }
 
     set connectKeyboard(value: boolean) {
-        this.isKeboard = value;
-        if (this.isKeboard) {
+        if (!this.isKeboard) {
+            this.isKeboard = value;
             document.addEventListener('keyup', ev => {
+                ev.preventDefault();
                 const code = ev.keyCode
                 this.portb = (code);
                 this.irq();
-            }, false);
+            }, {passive: true});
         } else {
-            document.removeEventListener('keyup', null, false);
+            document.removeEventListener('keyup', null, true);
         }
     }
 

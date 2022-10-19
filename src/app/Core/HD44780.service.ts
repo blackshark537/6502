@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Device } from "./interfaces/Device";
 import { HD44780 } from "./interfaces";
+import { Screen } from "./interfaces/Screen";
 
 @Injectable({
   providedIn: 'root'
@@ -111,7 +112,7 @@ export class LcdDeviceService extends Device {
 
         if (
           this.GetDataFlag(HD44780.A) === 0 &&
-          this.GetDataFlag(HD44780.B) === 1 &&
+          //this.GetDataFlag(HD44780.B) === 1 &&
           this.GetDataFlag(HD44780.C) === 1 &&
           this.GetDataFlag(HD44780.D) === 0
         ) this.moveCursor(!!this.GetDataFlag(HD44780.B));
@@ -125,7 +126,7 @@ export class LcdDeviceService extends Device {
         }
       }
       else {
-        this.print();
+        this.print(true);
       }
     }
   }
@@ -168,16 +169,24 @@ export class LcdDeviceService extends Device {
    */
   private moveCursor(direction = true) {
     direction ? this.cursor += 1 : this.cursor -= 1;
-    if (this.cursor >= 17) this.cursor = 0;
-    if (this.cursor < 0) this.cursor = 16;
+    if (this.cursor >= 21) this.cursor = 0;
+    if (this.cursor < 0) this.cursor = 20;
+    if(!direction && this.cursor < 20){
+      this._chars[this.cursor+2] = ' ';
+      if(this.isCursor) this._chars[this.cursor+1] = '_';
+      this.updateScreen();
+    }
   }
 
   /**
    * Sets entire display (D) on/off, 
    * Command 0x0C Display      0x0C: On  0x08: Off
    */
-  displayOn(OnOff = true) {
+  displayOn(OnOff = false) {
     this.isOn = OnOff;
+    let _screen = this.hasDevice(Screen.name) as Screen;
+    _screen.turnOnOff(OnOff);
+
     if (!OnOff) {
       clearInterval(this.interval);
       return;
@@ -208,10 +217,9 @@ export class LcdDeviceService extends Device {
   */
   showCursor(OnOff: boolean) {
     this.isCursor = OnOff;
-    this.isCursor ? this._chars[this.cursor] = '_' : this._chars[this.cursor] = '';
   }
 
-  print() {
+  print(moveCursor = false) {
 
     if (!this.isOn) return;
 
@@ -221,9 +229,21 @@ export class LcdDeviceService extends Device {
     const char = this.charCodes[this.lo][this.hi];
 
     if (!!char) {
+      this.moveCursor(moveCursor);
       this._chars[this.cursor] = char;
-      this.moveCursor(true);
+      if(this.isCursor){
+        this._chars[this.cursor+1] = '_' 
+      } else{
+        this._chars[this.cursor+1] = '';
+      }
+      this.updateScreen();
     }
+  }
+
+  updateScreen()
+  {
+    let _screen = this.hasDevice(Screen.name) as Screen;
+      _screen.fillText(this.chars);
   }
 
   get chars(): string {

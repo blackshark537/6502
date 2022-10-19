@@ -24,9 +24,9 @@ export abstract class Device{
         this.childs.filter(child => child.name != name);
     }
 
-    hasDevice(name: string): boolean
+    hasDevice(name: string): Device
     {
-        return this.childs.find(child => child.name === name)? true : false;
+        return this.childs.find(child => child.name === name);
     }
 
     abstract write(address: number, data: number): void;

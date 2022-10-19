@@ -37,16 +37,24 @@ JSR LCD_CLR
 JSR LCD_HOME
 LDY #$0B
 LDX #$00
-JMP LOOP
+    
+@MSG:
+    LDA $8F00,X
+    JSR PRINT
+    INX
+    TXA
+    CMP #20
+    BNE @MSG
+    JSR LCD_CLR
+    JSR LCD_HOME
+    JMP LOOP
 
 LOOP:
     NOP
     JMP LOOP
-    
-
 
 LCD_ON:
-    LDA #%00001100
+    LDA #%00001110
     STA PORTB
     LDA E
     STA PORTA
@@ -106,14 +114,14 @@ IRQ_HANDLER:
     LDA #%00000000 ;portb as input
     STA DDRB
     LDX PORTB
+    LDA #%11111111 ; portb as output
+    STA DDRB
 
     ; IF KEYCODE == #$08
 @DELETE:
     TXA
     CMP #$08
     BNE @HOME
-    LDA #%11111111 ; portb as output
-    STA DDRB
     JSR CURSOR_L
     RTI
 
@@ -121,19 +129,17 @@ IRQ_HANDLER:
     TXA
     CMP #$C0
     BNE @CONTINUE
-    LDA #%11111111 ; portb as output
-    STA DDRB
     JSR LCD_HOME
     JSR LCD_CLR
     RTI
 
 @CONTINUE:
-    LDA #%11111111 ; portb as output
-    STA DDRB
     TXA
     JSR PRINT
-
     RTI
+
+.org $8F00
+.byte "Type Something.     "
 
 .org NMI
 .addr IRQ_HANDLER

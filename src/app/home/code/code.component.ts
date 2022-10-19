@@ -66,8 +66,8 @@ JMP @LOOP
     CMP #16
     BNE @LOOP
     ;JMP RESTART
-    
-
+    BRK
+;PGM END
 
 LCD_ON:
     LDA #%00001100
