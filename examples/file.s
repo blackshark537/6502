@@ -22,6 +22,10 @@ PROG    = $8000 ; program origin
 E        = #%10000000
 RS       = #%00100000
 
+FILE        = $200
+FILE_PTR    = $00
+LCD_PTR     = $01
+
 .org PROG
 RESTART:
 ; CODE HERE
@@ -40,6 +44,7 @@ LDX #$00
     
 @MSG:
     LDA $8F00,X
+    STA LCD_PTR
     JSR PRINT
     INX
     TXA
@@ -99,6 +104,7 @@ CURSOR_L:
     RTS
 
 PRINT:
+    LDA LCD_PTR
     STA PORTB
     LDA E
     ORA RS
@@ -118,16 +124,17 @@ IRQ_HANDLER:
     STA DDRB
 
     ; IF KEYCODE == #$08
-@DELETE:
+@BACKWARD:
     TXA
     CMP #$08
-    BNE @HOME
+    BNE @ENTER
     JSR CURSOR_L
+    DEC FILE_PTR
     RTI
 
-@HOME:
+@ENTER:
     TXA
-    CMP #$C0
+    CMP #$0D
     BNE @CONTINUE
     JSR LCD_HOME
     JSR LCD_CLR
@@ -135,6 +142,10 @@ IRQ_HANDLER:
 
 @CONTINUE:
     TXA
+    LDY FILE_PTR
+    STA FILE,Y
+    STA LCD_PTR
+    INC FILE_PTR
     JSR PRINT
     RTI
 

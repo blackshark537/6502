@@ -1,7 +1,6 @@
 <h2>6522</h2>
-<app-lcd *ngIf="device.connectLcd" ></app-lcd>
-<app-leds *ngIf="!device.connectLcd" [set]="device.PORTA$ | async" label="PORT A" color="success"></app-leds>
-<app-leds *ngIf="!device.connectLcd && !device.connectKeyboard" [set]="device.PORTB$ | async" label="PORT B" color="warning"></app-leds>
+<app-leds  [set]="device.PORTA$ | async" label="PORT A" color="success"></app-leds>
+<app-leds  [set]="device.PORTB$ | async" label="PORT B" color="warning"></app-leds>
 
 <ion-accordion-group [multiple]="true" style="margin-top: 2em;">
     <ion-accordion value="settings" >
@@ -18,11 +17,11 @@
         </ion-item>
         <ion-item>
           <ion-checkbox [(ngModel)]="device.connectKeyboard" slot="start"></ion-checkbox>
-          <ion-label>Attach Keyboard (uses 6502 IRQ And PORTB)</ion-label>
+          <ion-label>Attach Keyboard (uses IRQ And PB)</ion-label>
         </ion-item>
         <ion-item>
           <ion-checkbox [(ngModel)]="device.connectLcd" slot="start"></ion-checkbox>
-          <ion-label>Attach LCD (uses PORTB, PA7 PA6 PA5)</ion-label>
+          <ion-label>Attach LCD (uses PB, PA7 PA6 & PA5)</ion-label>
         </ion-item>
         <ion-item>
             <ion-checkbox [(ngModel)]="device.connectToIRQ" slot="start"></ion-checkbox>

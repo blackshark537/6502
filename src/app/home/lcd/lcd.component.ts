@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { LcdDeviceService } from 'src/app/Core/HD44780.service';
 import { Device } from 'src/app/Core/interfaces/Device';
 import { Screen } from 'src/app/Core/interfaces/Screen';
@@ -8,7 +8,7 @@ import { Screen } from 'src/app/Core/interfaces/Screen';
   templateUrl: './lcd.component.html',
   styleUrls: ['./lcd.component.scss'],
 })
-export class LcdComponent extends Device implements Screen, OnInit {
+export class LcdComponent extends Device implements Screen, AfterViewInit {
   @ViewChild('screen', {static: true}) element: ElementRef
   canvas: HTMLCanvasElement;
   color = "orange";
@@ -23,7 +23,7 @@ export class LcdComponent extends Device implements Screen, OnInit {
   read(address: number): number {return 0}
   write(address: number, data: number): void {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.canvas = this.element.nativeElement;
     this.canvas.width = this.width;
     this.canvas.height = this.height;

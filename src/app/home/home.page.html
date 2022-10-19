@@ -11,6 +11,7 @@
     </ion-title>
 
     <ion-buttons slot="end">
+      <ion-button id="open-modal" expand="block">Open Modal</ion-button>
       <ion-button id="popover-button">
         Options
         <ion-icon name="ellipsis-vertical"></ion-icon>
@@ -50,7 +51,7 @@
             <ion-item slot="header" color="light">
               <ion-label>ASSEMBLER</ion-label>
             </ion-item>
-            <div class="ion-padding" slot="content" style="height: 70vh;">
+            <div slot="content" style="height: 70vh;">
               <app-code></app-code>
             </div>
           </ion-accordion>
@@ -58,7 +59,7 @@
             <ion-item slot="header" color="light">
               <ion-label>MEMORY</ion-label>
             </ion-item>
-            <div class="ion-padding sm-width" slot="content">
+            <div slot="content">
               <app-mem-buffer></app-mem-buffer>
             </div>
           </ion-accordion>
@@ -66,7 +67,7 @@
             <ion-item slot="header" color="light">
               <ion-label>MEMORY LAYOUT</ion-label>
             </ion-item>
-            <div class="ion-padding sm-width" slot="content">
+            <div class="sm-width" slot="content">
               <app-mem-map></app-mem-map>
             </div>
           </ion-accordion>
@@ -74,7 +75,7 @@
             <ion-item slot="header" color="light">
               <ion-label>SCHEMATIC</ion-label>
             </ion-item>
-            <div class="ion-padding sm-width" slot="content">
+            <div class="sm-width" slot="content">
               <app-schematic></app-schematic>
             </div>
           </ion-accordion>
@@ -82,7 +83,15 @@
         
       </ion-col>
       <ion-col size="12" size-md="6" size-lg="5" style="border-left: .4px solid grey;">
-        <ion-accordion-group [multiple]="true" [value]="['via', 'cpu']">
+        <ion-accordion-group [multiple]="true" [value]="['lcd', 'cpu']">
+          <ion-accordion value="lcd">
+            <ion-item slot="header" color="light">
+              <ion-label>HD44780</ion-label>
+            </ion-item>
+            <div slot="content">
+              <app-lcd ></app-lcd>
+            </div>
+          </ion-accordion>
           <ion-accordion value="via" >
             <ion-item slot="header" color="light">
               <ion-label>Versatile Interface Adapter (VIA)</ion-label>
@@ -96,7 +105,7 @@
             <ion-item slot="header" color="light">
               <ion-label>CPU</ion-label>
             </ion-item>
-            <div class="ion-padding" slot="content">
+            <div slot="content">
               <app-cpu></app-cpu>
             </div>
           </ion-accordion>
@@ -104,4 +113,30 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <ion-modal #modal trigger="open-modal">
+    <ng-template>
+      <ion-content>
+        
+        <ion-title size="large">
+          <h1>Welcome</h1>
+        </ion-title>
+        <ion-note>
+          <h3>6502 8-Bits Computer</h3>
+        </ion-note>
+        <ion-text>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem laborum perferendis illum officia non? Consequatur eius tempora, velit delectus, facilis nobis asperiores nam, incidunt error enim voluptatibus ipsam deserunt? Nostrum.</p>
+        </ion-text>
+
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar color="primary">
+          <ion-buttons slot="end">
+            <ion-button (click)="modal.dismiss()">Continue</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

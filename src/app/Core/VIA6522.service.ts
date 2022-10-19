@@ -110,16 +110,14 @@ export class VIADeviceService extends Device{
     }
 
     set connectKeyboard(value: boolean) {
+        this.isKeboard = value;
         if (!this.isKeboard) {
-            this.isKeboard = value;
             document.addEventListener('keyup', ev => {
                 ev.preventDefault();
-                const code = ev.keyCode
+                const code = ev.keyCode;
                 this.portb = (code);
                 this.irq();
             }, {passive: true});
-        } else {
-            document.removeEventListener('keyup', null, true);
         }
     }
 

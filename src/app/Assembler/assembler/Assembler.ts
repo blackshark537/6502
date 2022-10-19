@@ -1,5 +1,6 @@
 import { parse } from "../parser"
 import { assemble } from "./Assemble"
+import { ErrorObserver } from "./AssembyError.Observer"
 import { ByteArray } from "./ByteArray"
 import { Instruction } from "./Instrunction"
 
@@ -42,8 +43,10 @@ export class Assembler {
       if (!nonLabel.bytes || nonLabel.bytes.length === 0) {
         const { lineNumber } = nonLabel.line
         const { source } = nonLabel
+        const error = `Unable to generate hex for line ${lineNumber} "${source}".`
+        ErrorObserver.getInstance().error.next(error);
         throw new Error(
-          `Unable to generate hex for line ${lineNumber} "${source}".`
+          error
         )
       }
 
