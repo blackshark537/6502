@@ -3,13 +3,14 @@
 ![Demo](src/assets/imgs/ScreenShot.png)
 
 ## What
-Emulation of a simple 8-Bits computer based on the famous 6502 chip, it supports all documented opcodes even interrupts like NMI and IRQ. Inspired in the Ben Eater 6502 YouTube Serie:
+Emulation of a simple 8-Bits computer based on the famous 6502 chip.
+Supports the original 56 legal instructions even interrupts like NMI and IRQ. Inspired in the Ben Eater 6502 YouTube Serie:
  https://www.youtube.com/watch?v=LnzuMJLZRdU&list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH
 
-The 6502 code is a port to typescript from the javidx9 C++ NES Emulator YouTube Serie.
+The 6502 code is a port to typescript from the javidx9 C++ javidx9 C++ 6502 Implementation in his NES Emulator YouTube Serie.
 https://www.youtube.com/watch?v=8XmxKPJDGU0
 
-The assembler code is a port to typescript from the NesHacker 6502 Repo wich has been extended with extra commands to support label address at compile time.
+NesHacker 6502 JavaScript utility for 6502 programming, which has been extended with extra commands to support label address at compile time.
 https://github.com/NesHacker/6502
 
 ## Commands
