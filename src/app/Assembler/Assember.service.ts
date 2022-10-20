@@ -29,18 +29,22 @@ export class AssemblerService {
     async showError(error: string)
     {
         if(!error) return;
+        await this.showToast(error);
+    }
 
+    async showToast(msg: string)
+    {
         const toast = await this.toastCtrl.create({
-            message: error,
-            duration: 10000,
-            position: 'top',
-            mode: 'md',
-            buttons: [
-                {
-                    icon: 'close',
-                    role: 'cancel'
-                }
-            ]
+        duration: 6000,
+        message: msg,
+        position: 'bottom',
+        mode: 'md',
+        buttons:[
+            {
+            icon: 'close',
+            role: 'cancel'
+            }
+        ]
         });
 
         await toast.present();

@@ -3,21 +3,21 @@
 ;*      Welcome To 6502 8-Bits Computer Emulator:             *
 ;*                                                            *
 ;**************************************************************
-;
+
 ; System Vector Locations
-NMI     = $FFFA ; non maskable interrupt address
-RESB    = $FFFC ; restart address
-IRQ     = $FFFE ; interrupt address
+NMI     = $FFFA ; Non Maskable Interrupt Vector Address
+RESB    = $FFFC ; Restart Vector Address
+IRQ     = $FFFE ; Interrupt Request Vector Address
 
-PORTB   = $6000 ; via port B address
-PORTA   = $6001 ; via port A address
-DDRB    = $6002 ; via port B In/Out Mode address
-DDRA    = $6003 ; via port A In/Out Mode address
+PORTB   = $6000 ; Via Port B address.
+PORTA   = $6001 ; Via Port A address.
+DDRB    = $6002 ; Via Port B Mode 0 is input 1 is Output.
+DDRA    = $6003 ; Via Port A Mode 0 is input 1 is Output.
 
-IFR     = $600d ; via Interrupt Flag Register
-IER     = $600e ; via Interrupt Enable Register
+IFR     = $600d ; Via Interrupt Flag Register.
+IER     = $600e ; Via Interrupt Enable Register.
 
-PROG    = $8000 ; program origin
+PROG    = $8000 ; Program Rom Origin.
 
 E        = #%10000000
 RS       = #%00100000
@@ -35,6 +35,7 @@ CLI ; ENEABLE INTERRUPT
 JSR LCD_ON
 JSR LCD_CLR
 JSR LCD_HOME
+JSR LCD_ENTRY
 LDY #$0B
 LDX #$00
     
@@ -52,6 +53,15 @@ LDX #$00
 LOOP:
     NOP
     JMP LOOP
+
+LCD_ENTRY:
+    LDA #%00000110
+    STA PORTB
+    LDA E
+    STA PORTA
+    LDA #$00
+    STA PORTA
+    RTS
 
 LCD_ON:
     LDA #%00001110
@@ -123,6 +133,9 @@ IRQ_HANDLER:
     CMP #$08
     BNE @HOME
     JSR CURSOR_L
+    LDA #$20
+    JSR PRINT
+    JSR CURSOR_R
     RTI
 
 @HOME:

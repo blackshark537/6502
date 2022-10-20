@@ -50,13 +50,21 @@ There is 64KB of memory and this is broken into
 
 0x0000 - 0x00FF - Free (Zero Page)
 
-0x00FE - 0x00FE - Random Value Buffer
-
 0x0100 - 0x01FF - Stack
 
 0x0200 - 0x5FFF - Free
 
 0x6000 - 0x6FFF - VIA - Versatile Interface Adapter
+
+0x6000 - 0x6000 - VIA - PortB Register
+
+0x6001 - 0x6001 - VIA - PortA Register
+
+0x6002 - 0x6002 - VIA - PortB Direction Data Register
+
+0x6003 - 0x6003 - VIA - PortA Direction Data Register
+
+0x60FE - 0x60FE - VIA - Random Value Register
 
 0x7000 - 0x8000 - Free
 

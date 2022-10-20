@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -7,7 +8,12 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  
+  isModalOpen: boolean = localStorage.getItem('modal') === 'false'? false : true;
+
   pageTitle: string = 'Welcome'
+  version = environment.version;
+
   constructor(
     private alertController: AlertController
   ) {}
@@ -31,5 +37,10 @@ export class HomePage {
     });
 
     await prompt.present();
+  }
+
+  dontShowModal()
+  {
+    localStorage.setItem('modal', 'false');
   }
 }

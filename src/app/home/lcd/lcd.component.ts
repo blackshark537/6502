@@ -22,7 +22,8 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
 
   read(address: number): number {return 0}
   write(address: number, data: number): void {}
-
+  reset(): void {}
+  
   ngAfterViewInit(): void {
     this.canvas = this.element.nativeElement;
     this.canvas.width = this.width;
@@ -54,6 +55,11 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
         this.canvas.getContext("2d").fillStyle = this.color;
         this.rect()
       }
+  }
+
+  setCursorPos(cursor: number): void {
+    this.canvas.getContext('2d').fillStyle = "black";
+    this.canvas.getContext("2d").fillText("_", cursor*11.2, 27);
   }
 
   rect()

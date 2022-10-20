@@ -14,10 +14,10 @@ export class MemoryService extends Device {
 
     constructor() {
         super(MemoryService.name);
-        this.init();
+        this.reset();
     }
 
-    init()
+    reset()
     {
         this.ram = new Uint8Array(0x1ffff);
         this.load();

@@ -1,57 +1,107 @@
+/**
+ * HD44780U (LCD-II) (Dot Matrix Liquid Crystal Display Controller/Driver)
+ * 
+ * Description:
+ * 
+ * The HD44780U dot-matrix liquid crystal display controller and driver LSI displays alphanumerics 
+ * and symbols. It can be configured to drive a dot-matrix liquid crystal display under the control of a 4- or 8-bit microprocessor.
+ * Since all the functions such as display RAM, character generator, and liquid crystal driver, 
+ * required for driving a dot-matrix liquid crystal display are internally provided on one chip, 
+ * a minimal system can be interfaced with this controller/driver.
+ * 
+ */
+
 import { Injectable } from "@angular/core";
 import { Device } from "./interfaces/Device";
-import { HD44780 } from "./interfaces";
+import { HD44780, PORTBIT } from "./interfaces";
 import { Screen } from "./interfaces/Screen";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LcdDeviceService extends Device {
-  private _chars: Array<string> = new Array(32);;
-  private busy: boolean = false;
+
   private interval: any
 
   /**
-   *  LCD On/Off
-   *  true: On false: Off
+   * Helper Variables
    */
-  private isOn: boolean = false;
-  private isCursor: boolean = false;
+
+  private N = 0; // 0. 1-line display 1. 2-line display
+  private C = 0; // Cursor off
+  private B = 0; // Blinking off
+  private D = 0; // Display off
+  private S = 0; // Accompanies display shift, The display does not shift if S is 0.
+  private ID = 1; // 1. Increment by 1 0. decrement
+  private SC = 0; // 1. display shift 0. Cursor move
+  private RL = 0; // 1. shift to the right 0. shift to the left
+
 
   /**
-   * Instruction Register
+   * The address counter (AC) assigns addresses to both DDRAM and CGRAM. 
+   * When an address of an instruction is written into the IR, the address information is sent from the IR to the AC. 
+   * Selection of either DDRAM or CGRAM is also determined concurrently by the instruction. 
+   * After writing into (reading from) DDRAM or CGRAM, the AC is automatically incremented by 1 
+   * (decremented by 1). The AC contents are then output to DB0 to DB6 when RS = 0 and R/W = 1
+   * 
+   * Address counter
    */
-  private data = 0x00;
+  private AC = 0x00;
 
   /**
-   * LCD MPU Interface;
+   * The HD44780U has two 8-bit registers, an instruction register (IR) and a data register (DR).
+   * The IR stores instruction codes, such as display clear and cursor shift, and address information for 
+   * display data RAM (DDRAM) and character generator RAM (CGRAM). 
+   * The IR can only be written from the MPU.
+   * Instruction register (IR)
    */
-  private cmd = 0x00;
+  private IR = 0x00;
 
   /**
-   * Four low order bidirectional tristate data bus pins. 
-   * Used for data transfer and receive between the 
-   * MPU and the HD44780U. These pins are not used during 4-bit operation
+   * The DR temporarily stores data to be written into DDRAM or CGRAM and temporarily stores data to be read from DDRAM or CGRAM. 
+   * Data written into the DR from the MPU is automatically written into DDRAM or CGRAM by an internal operation. 
+   * The DR is also used for data storage when reading data from DDRAM or CGRAM. When address information is written into the IR, 
+   * data is read and then stored into the DR from DDRAM or CGRAM by an internal operation. 
+   * Data transfer between the MPU is then completed when the MPU reads the DR. 
+   * After the read, data in DDRAM or CGRAM at the next address is sent to the DR for the next read from the MPU. 
+   * By the register selector (RS) signal, these two registers can be selected.
+   * 
+   * Data Register
    */
-  private lo = 0x03;
+  private DR = 0x00;
 
   /**
-   * Four high order bidirectional tristate data bus 
-   * pins. Used for data transfer and receive between 
-   * the MPU and the HD44780U. DB7 can be used as a busy flag.
+   * Busy Flag Register
    */
-  private hi = 0x02;
+  private BF: boolean = false;
 
   /**
-   * Cursor pointer
+   * Display data RAM (DDRAM) stores display data represented in 8-bit character codes. 
+   * Its extended capacity is 80 × 8 bits, or 80 characters. 
+   * The area in display data RAM (DDRAM) that is not used for display can be used as general data RAM.
+   * 
+   * Display data RAM
    */
-  private cursor: number = 0;
+  private DDRAM_SIZE = 80;
+  private DDRAM: Array<string> = new Array(this.DDRAM_SIZE);
 
-  /**     MSB
-   * LSB | x | x | x | x |
-   *     | x | x | x | x |
+  /**
+   * In the character generator RAM, the user can rewrite character patterns by program. 
+   * For 5 × 8 dots, eight character patterns can be written, and for 5 × 10 dots, four character patterns can be written.
+   * Due the complexity it takes I'm not going to do this function.
+   * 
+   * Character generator RAM
+   * private CGRAM: Array<string> = new Array(64);
    */
-  private charCodes = [
+
+  /**
+    * Character generator ROM
+    *
+    *     MSB
+    * LSB | x | x | x | x |
+    *     | x | x | x | x |
+    */
+  private readonly CGROM = [
     ['?', '?', ' ', '0', '@', 'P', '`', 'p', '?', '?', '?', '-', '?', '?', '?', '?'],
     ['?', '?', '!', '1', 'A', 'Q', 'a', 'q', '?', '?', '?', '-', '?', '?', '?', '?'],
     ['?', '?', '"', '2', 'B', 'R', 'b', 'r', '?', '?', '?', '-', '?', '?', '?', '?'],
@@ -70,83 +120,221 @@ export class LcdDeviceService extends Device {
     ['?', '?', '/', '?', 'O', '_', 'o', '<', '?', '?', '?', '-', '?', '?', '?', '?'],
   ];
 
-  constructor() { 
+  /**
+  * Cursor pointer
+  */
+  private cursor: number = 0;
+
+  /**
+   * offset helper is used to shift the display
+   */
+  private offset: number = 0;
+
+  /**
+   * Defines the maximun character by each line
+   */
+  private CHARS_PER_LINE = 20;
+
+  constructor() {
     super(LcdDeviceService.name);
   }
 
-  read(address: number): number {
-      return this.data;
+  /**
+   * An internal reset circuit automatically initializes the HD44780U when the power is turned on. 
+   * The following instructions are executed during the initialization. 
+   * The busy flag (BF) is kept in the busy state until the initialization ends (BF = 1). 
+   * The busy state lasts for 10 ms after VCC rises to 4.5 V.
+   */
+  reset() {
+    this.DR = 0x00;
+    this.BF = true;
+    this.SetDataFlag(PORTBIT.DB7, this.BF);
+    this.clearDisplay();
+    this.returnHome();
+    this.N = 0;
+    this.D = 0;
+    this.C = 0;
+    this.B = 0;
+    this.ID = 1;
+    this.S = 0;
+    this.RL = 0;
+    this.SC = 0;
+    this.BF = false;
+    this.SetDataFlag(PORTBIT.DB7, this.BF);
   }
 
-  write(data: number, cmd: number)
-  {
-    this.cmd = cmd;
+  read(address: number): number {
+    /**
+     * Reads busy flag (BF) indicating internal operation 
+     * is being performed and reads address counter contents.
+     * 
+     */
+    if (
+      this.GetCmdFlag(HD44780.RS) === 0 &&
+      this.GetCmdFlag(HD44780.RW) === 1
+    ) return this.AC | this.GetDataFlag(PORTBIT.DB7);
+  }
+
+  write(data: number, cmd: number) {
+    this.IR = cmd;
+    this.DR = data;
 
     if (
       this.GetCmdFlag(HD44780.RW) === 0 &&
-      this.GetCmdFlag(HD44780.E) === 1  &&
-      !this.busy
+      this.GetCmdFlag(HD44780.E) === 1 &&
+      !this.BF
     ) {
-      
-      // display is busy
-      this.busy = true;
-      setTimeout(_=> this.busy = false, 10);
-
-      this.data = data;
-
-      // It's instruction
       if (this.GetCmdFlag(HD44780.RS) === 0) {
-
-        if (
-          this.GetDataFlag(HD44780.A) === 1 &&
-          this.GetDataFlag(HD44780.B) === 0 &&
-          this.GetDataFlag(HD44780.C) === 0 &&
-          this.GetDataFlag(HD44780.D) === 0
-        ) this.clear();
-
-        if (
-          this.GetDataFlag(HD44780.B) === 1 &&
-          this.GetDataFlag(HD44780.C) === 0 &&
-          this.GetDataFlag(HD44780.D) === 0
-        ) this.returnHome();
-
-        if (
-          this.GetDataFlag(HD44780.A) === 0 &&
-          //this.GetDataFlag(HD44780.B) === 1 &&
-          this.GetDataFlag(HD44780.C) === 1 &&
-          this.GetDataFlag(HD44780.D) === 0
-        ) this.moveCursor(!!this.GetDataFlag(HD44780.B));
-
-        if (
-          this.GetDataFlag(HD44780.D) === 1
-        ) {
-          this.blinkCursor(!!this.GetDataFlag(HD44780.A));
-          this.showCursor(!!this.GetDataFlag(HD44780.B));
-          this.displayOn(!!this.GetDataFlag(HD44780.C));
-        }
+        // display is busy
+        this.BF = true;
+        setTimeout(_ => this.BF = false, 30);
+        this.decodeInstruction();
       }
       else {
-        this.print(true);
+        if(!this.D) return;
+        // Read From Character Generator Rom CGROM
+        const hi = this.DR >> 4 & 0x0F;
+        const lo = this.DR & 0x0F;
+        const char = this.CGROM[lo][hi];
+        // Put character into DDRAM
+        this.DDRAM[this.AC] = char;
+        this.AC += this.ID? 1 : -1; //Increment Address Counter
+        this.cursor = this.AC;
+        
+        // draw the cursor
+        if(this.C) this.DDRAM[this.cursor] = '_';
+
+        /**
+         * Shifts the entire display either to the right (I/D = 1) or 
+         * to the left (I/D = 0) when S is 1. 
+         * The display does not shift if S is 0.
+         * 
+         */
+        if (!this.S) {
+          if(this.offset >= 0 ){ 
+            if(this.AC > this.CHARS_PER_LINE ){
+              this.offset += this.ID? 1 : -1;
+            }
+          } else {
+            this.offset = this.CHARS_PER_LINE;
+          }
+        }
+
+        if(this.AC < 0) this.AC = this.DDRAM_SIZE-1;
+        this.refreshScreen();
       }
     }
   }
 
-  private GetDataFlag(f: HD44780): number {
-    return ((this.data & f) > 0) ? 1 : 0;
+ /**
+ * Decode Instructions.
+ */
+  private decodeInstruction() {
+    /**
+     * Clear display.
+     */
+    if (
+      this.GetDataFlag(PORTBIT.DB0) === 1 &&
+      this.GetDataFlag(PORTBIT.DB1) === 0 &&
+      this.GetDataFlag(PORTBIT.DB2) === 0 &&
+      this.GetDataFlag(PORTBIT.DB3) === 0 &&
+      this.GetDataFlag(PORTBIT.DB4) === 0 &&
+      this.GetDataFlag(PORTBIT.DB5) === 0 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0
+    ) this.clearDisplay();
+    /**
+     * Return home.
+     */
+    if (
+      this.GetDataFlag(PORTBIT.DB1) === 1 &&
+      this.GetDataFlag(PORTBIT.DB2) === 0 &&
+      this.GetDataFlag(PORTBIT.DB3) === 0
+    ) this.returnHome();
+    /**
+     * Entry mode set.
+     */
+    if (
+      this.GetDataFlag(PORTBIT.DB2) === 1 &&
+      this.GetDataFlag(PORTBIT.DB3) === 0
+      
+    ) this.entryMode();
+    /**
+     * Display on/off control
+     * Sets entire display (D) on/off, 
+     * cursor on/off (C), and blinking 
+     * of cursor position character (B).
+     * blinking is not implemented
+     */
+    if (
+      this.GetDataFlag(PORTBIT.DB3) === 1
+    ){
+      this.cursorOnOffControl(!!this.GetDataFlag(PORTBIT.DB1));
+      this.displayOnOffControl(!!this.GetDataFlag(PORTBIT.DB2));
+    }
+    /**
+     * Cursor or display shift
+     * Moves cursor and shifts display 
+     * without changing DDRAM contents.
+     */
+     if (
+      this.GetDataFlag(PORTBIT.DB4) === 1
+    ) this.cursorDisplayShift();
+    /**
+     * Function set
+     */
+    if(
+      this.GetDataFlag(PORTBIT.DB5) === 1
+    ) this.functionSet();
+
+    /**
+     * following commands are not supported
+     * 
+     * 1 - Sets CGRAM address. CGRAM data is sent and received after this setting.
+     * 2 - Sets DDRAM address. DDRAM data is sent and received after this setting.
+     * 
+     */
+
+    /**
+     * Read busy flag & address
+     */
+      if (
+        this.GetCmdFlag(HD44780.RW) === 1
+      ) this.SetDataFlag(PORTBIT.DB7, this.BF);
+  }
+
+  private GetDataFlag(f: PORTBIT): number {
+    return ((this.DR & f) > 0) ? 1 : 0;
+  }
+
+  private SetDataFlag(f: PORTBIT, v: boolean | number): void {
+    if (v)
+      this.DR |= f;
+    else
+      this.DR &= ~f;
   }
 
   private GetCmdFlag(f: HD44780): number {
-    return ((this.cmd & f) > 0) ? 1 : 0;
+    return ((this.IR & f) > 0) ? 1 : 0;
+  }
+
+  /**
+   * Sets interface data length (DL), 
+   * number of display lines (N), and character font (F).
+   */
+  private functionSet()
+  {
+    this.N = this.GetDataFlag(PORTBIT.DB3);
   }
 
   /**
    * Clears entire display and 
    * sets DDRAM address 0 in 
    * address counter.
-   * command 0x01
    */
-  private clear() {
-    this._chars = new Array(32);
+  private clearDisplay() {
+    this.DDRAM = new Array(this.DDRAM_SIZE);
+    this.AC = 0;
   }
 
   /**
@@ -156,6 +344,8 @@ export class LcdDeviceService extends Device {
    * command 0x02
    */
   private returnHome() {
+    this.AC = 0;
+    this.offset = 0;
     this.cursor = 0;
   }
 
@@ -164,102 +354,67 @@ export class LcdDeviceService extends Device {
    * These operations are performed during data write and read.
    * Command 0x04 Decrement
    * Command 0x06 Increment
-   * Command 0x05 Display Shift L
-   * Command 0x07 Display Shift R
+   * Command 0x05 Display Shift On
+   * Command 0x07 Display Shift Off
    */
-  private moveCursor(direction = true) {
-    direction ? this.cursor += 1 : this.cursor -= 1;
-    if (this.cursor >= 21) this.cursor = 0;
-    if (this.cursor < 0) this.cursor = 20;
-    if(!direction && this.cursor < 20){
-      this._chars[this.cursor+2] = ' ';
-      if(this.isCursor) this._chars[this.cursor+1] = '_';
-      this.updateScreen();
-    }
+  private entryMode() {
+    this.S = this.GetDataFlag(PORTBIT.DB0);
+    this.ID = this.GetDataFlag(PORTBIT.DB1);
   }
 
   /**
    * Sets entire display (D) on/off, 
-   * Command 0x0C Display      0x0C: On  0x08: Off
+   * Command 0x0C Display    0x0C: On  0x08: Off
    */
-  displayOn(OnOff = false) {
-    this.isOn = OnOff;
+  displayOnOffControl(OnOff = false) {
+    this.D = OnOff ? 1 : 0;
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.turnOnOff(OnOff);
 
-    if (!OnOff) {
+    if (!OnOff && this.interval) {
       clearInterval(this.interval);
       return;
     }
+  }
+/**
+ * Moves cursor and shifts display without changing DDRAM contents.
+ * Cursor or display shift shifts the cursor position or display to the right or left 
+ * without writing or reading display data (Table 7). This function is used to correct or search the display. 
+ * In a 2-line display, the cursor moves to the second line when it passes the 40th digit of the first line. 
+ * Note that the first and second line displays will shift at the same time.
+ */
+  cursorDisplayShift()
+  {
+    this.RL = this.GetDataFlag(PORTBIT.DB2);
+    this.SC = this.GetDataFlag(PORTBIT.DB3);
+  }
+
+  /**
+  * cursor on/off (C)
+  */
+  cursorOnOffControl(OnOff: boolean) {
+    this.C = OnOff ? 1 : 0;
   }
 
   /**
    * blinking of cursor position character (B).
    * Command 0x09 Blink Cursor 1: On  0: Off
+   * 
+   * Not implementing blink
    */
-  blinkCursor(OnOff = false) {
-    if (OnOff && this.isCursor) {
+   blinkCursor() {}
 
-      let blink = false;
-      this.interval = setInterval(() => {
-        let temp = this._chars[this.cursor];
-        blink ? this._chars[this.cursor] = '_' : this._chars[this.cursor] = temp;
-        blink = !blink;
-      }, 800);
-    }
-    else {
-      if (this.interval) clearInterval(this.interval);
-    }
-  }
-
-  /**
-  * cursor on/off (C), and 
-  */
-  showCursor(OnOff: boolean) {
-    this.isCursor = OnOff;
-  }
-
-  print(moveCursor = false) {
-
-    if (!this.isOn) return;
-
-    this.hi = this.data >> 4 & 0x0F;
-    this.lo = this.data & 0x0F;
-
-    const char = this.charCodes[this.lo][this.hi];
-
-    if (!!char) {
-      this.moveCursor(moveCursor);
-      this._chars[this.cursor] = char;
-      if(this.isCursor){
-        this._chars[this.cursor+1] = '_' 
-      } else{
-        this._chars[this.cursor+1] = '';
-      }
-      this.updateScreen();
-    }
-  }
-
-  updateScreen()
-  {
+  refreshScreen() {
     let _screen = this.hasDevice(Screen.name) as Screen;
-      _screen.fillText(this.chars);
+    _screen.fillText(this.chars);
   }
 
   get chars(): string {
-    return this._chars.join('');
+    return this.DDRAM.filter((el, i)=> i >= this.offset ).join('');
   }
 
   set chars(val: string) {
-    this._chars.fill('').join(val);
-  }
-
-  get displayOnOff(): boolean {
-    return this.isOn
-  }
-
-  set displayOnOff(val: boolean) {
-    this.isOn = val;
+    this.DDRAM[this.DDRAM.length-1] = val;
   }
 
 }

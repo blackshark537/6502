@@ -4,29 +4,32 @@ import { MemoryService } from "./Memory.service";
 import { CPU6502 } from "./CPU6502.service";
 import { DeviceInfo, DeviceState } from "./interfaces";
 import { VIADeviceService } from "./VIA6522.service";
+import { LcdDeviceService } from "./HD44780.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ComputerService {
-    private speed: number = 3;
+    private freq: number = 3;
 
     private sub$: Subscription;
-    public interval$: Observable<any>;
+    public clock$: Observable<any>;
 
     constructor(
         private cpu: CPU6502,
         private buffer: MemoryService,
+        private lcd: LcdDeviceService,
         private via: VIADeviceService
     ) { 
         this.cpu.connectDevice(this.buffer);
         this.cpu.connectDevice(this.via);
-        this.interval$ = interval(this.speed);
+        this.via.connectDevice(this.lcd);
+        this.clock$ = interval(this.freq);
     }
 
     get vendor(): DeviceInfo
     {
-        this.cpu.speed = (1000/this.speed).toFixed(0) ;
+        this.cpu.freq = (1000/this.freq).toFixed(0);
         return this.cpu.deviceInfo();
     }
 
@@ -37,19 +40,20 @@ export class ComputerService {
 
     get clock(): Observable<number>
     {
-        return this.interval$;
+        return this.clock$;
     }
 
     get sync(): number
     {
-        return this.speed;
+        return this.freq;
     }
 
     run()
     {
         this.stop();
         this.cpu.reset();
-        this.sub$ = this.interval$.subscribe(_=>{
+        this.via.reset();
+        this.sub$ = this.clock$.subscribe(_=>{
             this.cpu.clock();
             this.buffer.load();
             if(this.cpu.isComplete) this.stop();
@@ -71,6 +75,7 @@ export class ComputerService {
     restart()
     {
         this.cpu.reset();
+        this.via.reset();
     }
 
     irq()

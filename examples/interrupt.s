@@ -10,18 +10,21 @@
 ;*        .addr get a label address.                          *
 ;*                                                            *
 ;**************************************************************
-;
+
 ; System Vector Locations
-VECTORS = $FFFA ; non maskable interrupt address
+NMI     = $FFFA ; Non Maskable Interrupt Vector Address
+RESB    = $FFFC ; Restart Vector Address
+IRQ     = $FFFE ; Interrupt Request Vector Address
 
-PORTB   = $6000 ; port B address
-PORTA   = $6001 ; port A address
-DDRB    = $6002 ; port B In/Out Mode address
-DDRA    = $6003 ; port A In/Out Mode address
+PORTB   = $6000 ; Via Port B address.
+PORTA   = $6001 ; Via Port A address.
+DDRB    = $6002 ; Via Port B Mode 0 is input 1 is Output.
+DDRA    = $6003 ; Via Port A Mode 0 is input 1 is Output.
 
-IFR     = $600d ; Interrupt Flag Register
-IER     = $600e ; Interrupt Enable Register
-PROG    = $8000 ; program origin
+IFR     = $600d ; Via Interrupt Flag Register.
+IER     = $600e ; Via Interrupt Enable Register.
+
+PROG    = $8000 ; Program Rom Origin.
 
 .org PROG
 restart:

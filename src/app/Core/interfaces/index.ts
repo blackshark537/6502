@@ -27,14 +27,14 @@ export enum FLAGS6502
 
 export enum PORTBIT
 {
-    A = (1 << 0),	// Bit 0
-    B = (1 << 1),	// Bit 1
-    C = (1 << 2),	// Bit 2
-    D = (1 << 3),	// Bit 3
-    E = (1 << 4),	// Bit 4
-    F = (1 << 5),	// Bit 5
-    G = (1 << 6),	// Bit 6
-    H = (1 << 7),	// Bit 7
+    DB0 = (1 << 0),	// Bit 0
+    DB1 = (1 << 1),	// Bit 1
+    DB2 = (1 << 2),	// Bit 2
+    DB3 = (1 << 3),	// Bit 3
+    DB4 = (1 << 4),	// Bit 4
+    DB5 = (1 << 5),	// Bit 5
+    DB6 = (1 << 6),	// Bit 6
+    DB7 = (1 << 7),	// Bit 7
 };
 
 export enum HD44780

@@ -30,15 +30,12 @@ export class CPU6502 extends Device{
     private cycles:         number  = 0x00;
     private clock_count:    number = 0x0000;
     private stop:           boolean = false;
-    
-    // For debug pourpose
-    private debug: boolean | number = 1;
 
     /**
-     * Cpu clock speed.
-     * @constant speed Number
+     * Cpu clock Frequency.
+     * @constant freq Number
      */
-     public speed: string  = '1000000';
+     public freq: string  = '1000000';
     
     constructor() {
         super(CPU6502.name);
@@ -53,7 +50,7 @@ export class CPU6502 extends Device{
             device: '65C02',
             fabricant: 'BSC',
             year: '2022',
-            clock: this.speed+' Hz'
+            clock: this.freq+' Hz'
         }
         return device;
     }
@@ -1399,14 +1396,6 @@ export class CPU6502 extends Device{
      */
     set isComplete(val: boolean) {
         this.stop = val;
-    }
-
-    /**
-     * Put the cpu into debug mode.
-     * @param debug Number | Boolean
-     */
-    SetDebugMode(debug: boolean | number){
-        this.debug = debug;
     }
 
     //private static instance: CPU;

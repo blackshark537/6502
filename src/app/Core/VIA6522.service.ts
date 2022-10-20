@@ -10,31 +10,47 @@ import { LcdDeviceService } from "./HD44780.service";
     providedIn: 'root'
 })
 export class VIADeviceService extends Device{
-    
-    private IRQ: boolean = true;
-    private NMI: boolean = false;
+
+    /**
+     * 65c22 Core registers.
+     */
+    private IER: number = 0x00;
+    private IFR: number = 0x00;
+    private ddra: number = 0x00;
+    private ddrb: number = 0x00;
+    private portb: number = 0x00;
+    private porta: number = 0x00;
+
+    /**
+     * Helper Variables
+     */
+    private isIRQ: boolean = true;
+    private isNMI: boolean = false;
     private isRandom: boolean = true;
     private isKeboard: boolean = false;
     private isLcd: boolean = true;
 
-    // internal registers
-    private IER: number = 0x00;
-    private IFR: number = 0x00;
-    private DDRA: number = 0x00;
-    private DDRB: number = 0x00;
-    private portb: number = 0x00;
-    private porta: number = 0x00;
-
+    /**
+     * Ports Observables
+     */
     private _PORTA$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     
     constructor(
-        private readonly lcd: LcdDeviceService,
     ) { 
         super(VIADeviceService.name);
-        this.SetFlag(PORTBIT.H, 1);
+        this.Set_IER_Flag(PORTBIT.DB7, 1);
     }
 
+    reset(): void {
+        this.childs.forEach(child => child.reset());
+    }
+
+    /**
+     * 
+     * @param address 
+     * @returns 
+     */
     read(address: number): number
     {
         if (this.isRandom && address === 0x60FE) {
@@ -51,34 +67,48 @@ export class VIADeviceService extends Device{
         if(address === 0x600c) this.IFR = data;
         if(address === 0x6000) this.portb = data;
         if(address === 0x6001) this.porta = data;
-        if(address === 0x6002) this.DDRB = data;
-        if(address === 0x6003) this.DDRA = data;
+        if(address === 0x6002) this.ddrb = data;
+        if(address === 0x6003) this.ddra = data;
 
         if(this.isLcd)
         {
-            this.lcd.write((this.portb & this.DDRB), (this.porta & this.DDRA));
+            const lcd = this.childs.find(child => child instanceof LcdDeviceService);
+            if(lcd) lcd.write((this.portb & this.ddrb), (this.porta & this.ddra));
         }
 
-        this._PORTB$.next([this.DDRB, this.portb]);
-        this._PORTA$.next([this.DDRA, this.porta]);
+        this._PORTB$.next([this.ddrb, this.portb]);
+        this._PORTA$.next([this.ddra, this.porta]);
     
     }
 
-    private GetFlag(f: PORTBIT): number {
+    // Interrup Eneable register
+    private Get_IER_Flag(f: PORTBIT): number {
         return ((this.IER & f) > 0) ? 1 : 0;
     }
 
-    private SetFlag(f: PORTBIT, v: boolean | number): void {
+    private Set_IER_Flag(f: PORTBIT, v: boolean | number): void {
         if (v)
             this.IER |= f;
         else
             this.IER &= ~f;
     }
 
-    irq() {
-        if (this.GetFlag(PORTBIT.H) === 1) {
-            if (this.IRQ && this.parent instanceof CPU6502) this.parent?.irq();
-            if (this.NMI && this.parent instanceof CPU6502) this.parent.nmi();
+    // Interrup Flag register
+    private Get_IFR_Flag(f: PORTBIT): number {
+        return ((this.IFR & f) > 0) ? 1 : 0;
+    }
+
+    private Set_IFR_Flag(f: PORTBIT, v: boolean | number): void {
+        if (v)
+            this.IFR |= f;
+        else
+            this.IFR &= ~f;
+    }
+
+    dispatchiIRQ() {
+        if (this.Get_IER_Flag(PORTBIT.DB7) === 1) {
+            if (this.isIRQ && this.parent instanceof CPU6502) this.parent?.irq();
+            if (this.isNMI && this.parent instanceof CPU6502) this.parent.nmi();
         }
     }
 
@@ -110,33 +140,35 @@ export class VIADeviceService extends Device{
     }
 
     set connectKeyboard(value: boolean) {
-        this.isKeboard = value;
         if (!this.isKeboard) {
-            document.addEventListener('keyup', ev => {
+            this.isKeboard = value;
+            addEventListener('keyup', ev => {
                 ev.preventDefault();
                 const code = ev.keyCode;
                 this.portb = (code);
-                this.irq();
-            }, {passive: true});
+                this.dispatchiIRQ();
+            }, true);
+        } else {
+            removeEventListener('keyup', null, true);
         }
     }
 
     get connectToIRQ(): boolean {
-        return this.IRQ;
+        return this.isIRQ;
     }
 
     set connectToIRQ(irq: boolean) {
-        this.IRQ = irq;
-        this.NMI = false;
+        this.isIRQ = irq;
+        this.isNMI = false;
     }
 
     get connectToNMI(): boolean {
-        return this.NMI;
+        return this.isNMI;
     }
 
     set connectToNMI(nmi: boolean) {
-        this.NMI = nmi;
-        this.IRQ = false;
+        this.isNMI = nmi;
+        this.isIRQ = false;
     }
 
 }
