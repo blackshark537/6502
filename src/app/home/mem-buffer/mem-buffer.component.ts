@@ -29,7 +29,7 @@ export class MemBufferComponent implements OnInit {
     let from = parseInt(this.FROM, 16);
 
     this.buffer.FromTo(from, from + 0xff);
-    this.buffer.load();
+    this.buffer.refresh();
   }
 
   clear()

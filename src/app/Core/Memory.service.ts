@@ -20,7 +20,7 @@ export class MemoryService extends Device {
     reset()
     {
         this.ram = new Uint8Array(0x1ffff);
-        this.load();
+        this.refresh();
     }
 
     From(address: number)
@@ -54,7 +54,7 @@ export class MemoryService extends Device {
      * on memory for a specific range of addresses indicated through
      * parameter form and to.
      */
-    load(): void{
+    refresh(): void{
         const memory: {[address: string]: string[]} = {};
         for (let address = this.from; address <= this.to; ++address) {
             const hi = (address).toString(16);
@@ -74,7 +74,7 @@ export class MemoryService extends Device {
      */
     clear(){
         this.ram.fill(0x00);
-        this.load();
+        this.refresh();
     }
 
     /**

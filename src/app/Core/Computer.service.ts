@@ -5,6 +5,7 @@ import { CPU6502 } from "./CPU6502.service";
 import { DeviceInfo, DeviceState } from "./interfaces";
 import { VIADeviceService } from "./VIA6522.service";
 import { LcdDeviceService } from "./HD44780.service";
+import { LcdComponent } from "../home/lcd/lcd.component";
 
 @Injectable({
     providedIn: 'root'
@@ -12,18 +13,19 @@ import { LcdDeviceService } from "./HD44780.service";
 export class ComputerService {
     private freq: number = 3;
 
-    private sub$: Subscription;
     public clock$: Observable<any>;
+    private sub$: Subscription;
 
     constructor(
         private cpu: CPU6502,
-        private buffer: MemoryService,
+        private memory: MemoryService,
         private lcd: LcdDeviceService,
-        private via: VIADeviceService
+        private via: VIADeviceService,
     ) { 
-        this.cpu.connectDevice(this.buffer);
+        this.cpu.connectDevice(this.memory);
         this.cpu.connectDevice(this.via);
         this.via.connectDevice(this.lcd);
+        
         this.clock$ = interval(this.freq);
     }
 
@@ -55,7 +57,7 @@ export class ComputerService {
         this.via.reset();
         this.sub$ = this.clock$.subscribe(_=>{
             this.cpu.clock();
-            this.buffer.load();
+            this.memory.refresh();
             if(this.cpu.isComplete) this.stop();
         });
     }
@@ -69,7 +71,7 @@ export class ComputerService {
     {
         if(this.cpu.isComplete) return;
         this.cpu.clock();
-        this.buffer.load();
+        this.memory.refresh();
     }
 
     restart()
