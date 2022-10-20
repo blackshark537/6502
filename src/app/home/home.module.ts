@@ -14,6 +14,7 @@ import { MemMapComponent } from './mem-map/mem-map.component';
 import { LedsComponent } from './leds/leds.component';
 import { LcdComponent } from './lcd/lcd.component';
 import { SchematicComponent } from './schematic/schematic.component';
+import { LicenseComponent } from './license/license.component';
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ import { SchematicComponent } from './schematic/schematic.component';
     ViaComponent,
     LedsComponent,
     LcdComponent,
+    LicenseComponent
   ],
 })
 export class HomePageModule {}

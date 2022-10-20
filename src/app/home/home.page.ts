@@ -10,7 +10,8 @@ import { environment } from 'src/environments/environment';
 export class HomePage {
   
   isModalOpen: boolean = localStorage.getItem('modal') === 'false'? false : true;
-
+  isLicense: boolean = false;
+  
   pageTitle: string = 'Welcome'
   version = environment.version;
 
