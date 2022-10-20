@@ -219,12 +219,14 @@ export class CodeComponent implements OnInit, AfterViewInit {
   }
 
   loadSource() {
+    if(this.isSource) return;
     this._editor.setValue(this.source);
     this.isSource = true;
     this.title = "CODE";
   }
 
   loadHex() {
+    if(!this.isSource) return;
     this.source = this._editor.getValue();
     this._editor.setValue(this.code);
     this.isSource = false;
