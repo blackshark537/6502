@@ -11,6 +11,7 @@
     </ion-title>
 
     <ion-buttons slot="end">
+      <ion-button fill="solid" shape="round" color="warning" href="https://www.paypal.com/donate/?hosted_button_id=7ZVJVGGBVERDW" >donate</ion-button>      
       <button #modalTrigger [ngStyle]="{display: 'none'}" id="open-modal" expand="block"></button>
       <ion-button id="popover-button">
         Options
@@ -120,7 +121,7 @@
         <ion-grid>
           <ion-row>
             <ion-col size="12">
-              <ion-toolbar>
+              <ion-toolbar [ngStyle]="{borderBottom: '.5px solid gray'}" class="ion-padding">
                 <ion-thumbnail slot="start">
                   <img src="assets/icon/6502.png" alt="logo">
                 </ion-thumbnail>
@@ -128,94 +129,96 @@
                   <h1>6502 8-Bits Computer. {{version}}</h1>
                 </ion-title>
               </ion-toolbar>
-              <ion-text [ngStyle]="{
-                height: '45vh',
-                overfloat: 'scroll',
-                padding: '2em'
-              }">
-              <h3>What</h3>
-              <p>Emulation of a simple 8-Bits computer based on the famous 6502 chip.
-              Supports the original 56 legal instructions even interrupts like NMI and IRQ. Inspired in the
-                <a href="https://www.youtube.com/watch?v=LnzuMJLZRdU&list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH" target="_blank" rel="noopener noreferrer">Ben Eater 6502 YouTube</a> Serie.</p>
-              <p>The 6502 code is a port to typescript from the <a href="https://www.youtube.com/watch?v=8XmxKPJDGU0" target="_blank" rel="noopener noreferrer">javidx9 C++ 6502 Implementation</a>.</p>
-              
-              <p>The assembler code is a port to typescript from the <a href="https://github.com/NesHacker/6502" target="_blank" rel="noopener noreferrer">NesHacker 6502 JavaScript utility for 6502 programming,</a> which has been extended with extra commands to support label address at compile time.</p>
-              
-              <h3>Assembler Commands</h3>
-              
-              <h4>.org</h4>
-              This command set the absolute program address at the point of invocation. It is
-              useful for defining patch segements for ROM hacks.
-              <p>
-                <code>
-                  .org $8000 ; Set the absolute program offset to $8000
-                </code>
-              </p>
-  
-              <h4>.addr</h4>
-              This command set the absolute program address of a label.
-              Useful for defining label address.
-              <p>
-                <code>
-                  .addr my_label    ; Place the address of my_label
-                </code>
-              </p>
-              
-              <h4>.word</h4>
-              This defines 2 bytes to be processed by the assembler. Useful
-              for defining configuration bytes or some address.
-              <p>
-                <code>
-                  .word $FFFC     ; Literal 2 bytes: $FF, $FC
-                </code>
-              </p>
-              
-              <h4>.byte or .byt</h4>
-              This defines a run of arbitrary bytes to be processed by the assembler. Useful
-              for defining lookup tables or text segments.
-              <p>
-                <code>
-                  .byte "Hello" ; Literal bytes: $48, $65, 6C, $6C, $6F
-                </code>
-              </p>
-              <p>
-                <code>
-                  .byte 16, 32, 64 ; Literal bytes: $10, $20, $40
-                </code>
-              </p>
-              
-              <h3>Memory Layout</h3>
-              
-              <p>There is 64KB of memory and this is broken into:</p>
-  
-              <p>0x0000 - 0x00FF - Free (Zero Page).</p>
-              
-              <p>0x0100 - 0x01FF - Stack.</p>
-              
-              <p>0x0200 - 0x5FFF - Free.</p>
-              
-              <p>0x6000 - 0x6FFF - VIA - Versatile Interface Adapter.</p>
-              
-              <p>0x6000 - 0x6000 - VIA - PortB Register.</p>
-              
-              <p>0x6001 - 0x6001 - VIA - PortA Register.</p>
-              
-              <p>0x6002 - 0x6002 - VIA - PortB Direction Data Register.</p>
-              
-              <p>0x6003 - 0x6003 - VIA - PortA Direction Data Register.</p>
-              
-              <p>0x60FE - 0x60FE - VIA - Random Value Register.</p>
-              
-              <p>0x7000 - 0x8000 - Free.</p>
-              
-              <p>0x8000 - 0xFFF9 - Program - always make sure to assemble programs for this address.</p>
-              
-              <p>0xFFFA - 0xFFFA - NMI - Non-Maskable Interrupt Vector Location.</p>
-              
-              <p>0xFFFA - 0xFFFC - RESB - Reset Vector Location.</p>
-              
-              <p>0xFFFA - 0xFFFE - IRQB - Interrupt Request Vector Location.</p>
-              </ion-text>
+              <div [ngStyle]="{height: '40vh', overflowY: 'scroll'}">
+                <ion-text [ngStyle]="{
+                  height: '45vh',
+                  overfloat: 'scroll',
+                  padding: '2em'
+                }">
+                <h3>What</h3>
+                <p>Emulation of a simple 8-Bits computer based on the famous 6502 chip.
+                Supports the original 56 legal instructions even interrupts like NMI and IRQ. Inspired in the
+                  <a href="https://www.youtube.com/watch?v=LnzuMJLZRdU&list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH" target="_blank" rel="noopener noreferrer">Ben Eater 6502 YouTube</a> Serie.</p>
+                <p>The 6502 code is a port to typescript from the <a href="https://www.youtube.com/watch?v=8XmxKPJDGU0" target="_blank" rel="noopener noreferrer">javidx9 C++ 6502 Implementation</a>.</p>
+                
+                <p>The assembler code is a port to typescript from the <a href="https://github.com/NesHacker/6502" target="_blank" rel="noopener noreferrer">NesHacker 6502 JavaScript utility for 6502 programming,</a> which has been extended with extra commands to support label address at compile time.</p>
+                
+                <h3>Assembler Commands</h3>
+                
+                <h4>.org</h4>
+                This command set the absolute program address at the point of invocation. It is
+                useful for defining patch segements for ROM hacks.
+                <p>
+                  <code>
+                    .org $8000 ; Set the absolute program offset to $8000
+                  </code>
+                </p>
+    
+                <h4>.addr</h4>
+                This command set the absolute program address of a label.
+                Useful for defining label address.
+                <p>
+                  <code>
+                    .addr my_label    ; Place the address of my_label
+                  </code>
+                </p>
+                
+                <h4>.word</h4>
+                This defines 2 bytes to be processed by the assembler. Useful
+                for defining configuration bytes or some address.
+                <p>
+                  <code>
+                    .word $FFFC     ; Literal 2 bytes: $FF, $FC
+                  </code>
+                </p>
+                
+                <h4>.byte or .byt</h4>
+                This defines a run of arbitrary bytes to be processed by the assembler. Useful
+                for defining lookup tables or text segments.
+                <p>
+                  <code>
+                    .byte "Hello" ; Literal bytes: $48, $65, 6C, $6C, $6F
+                  </code>
+                </p>
+                <p>
+                  <code>
+                    .byte 16, 32, 64 ; Literal bytes: $10, $20, $40
+                  </code>
+                </p>
+                
+                <h3>Memory Layout</h3>
+                
+                <p>There is 64KB of memory and this is broken into:</p>
+    
+                <p>0x0000 - 0x00FF - Free (Zero Page).</p>
+                
+                <p>0x0100 - 0x01FF - Stack.</p>
+                
+                <p>0x0200 - 0x5FFF - Free.</p>
+                
+                <p>0x6000 - 0x6FFF - VIA - Versatile Interface Adapter.</p>
+                
+                <p>0x6000 - 0x6000 - VIA - PortB Register.</p>
+                
+                <p>0x6001 - 0x6001 - VIA - PortA Register.</p>
+                
+                <p>0x6002 - 0x6002 - VIA - PortB Direction Data Register.</p>
+                
+                <p>0x6003 - 0x6003 - VIA - PortA Direction Data Register.</p>
+                
+                <p>0x60FE - 0x60FE - VIA - Random Value Register.</p>
+                
+                <p>0x7000 - 0x8000 - Free.</p>
+                
+                <p>0x8000 - 0xFFF9 - Program - always make sure to assemble programs for this address.</p>
+                
+                <p>0xFFFA - 0xFFFA - NMI - Non-Maskable Interrupt Vector Location.</p>
+                
+                <p>0xFFFA - 0xFFFC - RESB - Reset Vector Location.</p>
+                
+                <p>0xFFFA - 0xFFFE - IRQB - Interrupt Request Vector Location.</p>
+                </ion-text>
+              </div>
             </ion-col>
           </ion-row>
         </ion-grid>

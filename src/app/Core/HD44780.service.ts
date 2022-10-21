@@ -21,12 +21,9 @@ import { Screen } from "./interfaces/Screen";
 })
 export class LcdDeviceService extends Device {
 
-  private interval: any
-
   /**
    * Helper Variables
    */
-
   private N = 0; // 0. 1-line display 1. 2-line display
   private C = 0; // Cursor off
   private B = 0; // Blinking off
@@ -35,7 +32,6 @@ export class LcdDeviceService extends Device {
   private ID = 1; // 1. Increment by 1 0. decrement
   private SC = 0; // 1. display shift 0. Cursor move
   private RL = 0; // 1. shift to the right 0. shift to the left
-
 
   /**
    * The address counter (AC) assigns addresses to both DDRAM and CGRAM. 
@@ -179,18 +175,20 @@ export class LcdDeviceService extends Device {
     this.IR = cmd;
     this.DR = data;
 
+    // if instruction:
     if (
       this.GetCmdFlag(HD44780.RW) === 0 &&
       this.GetCmdFlag(HD44780.E) === 1 &&
       !this.BF
     ) {
       if (this.GetCmdFlag(HD44780.RS) === 0) {
-        // display is busy
-        this.BF = true;
-        setTimeout(_ => this.BF = false, 30);
+        this.BF = true; // display is busy
+        
         this.decodeInstruction();
       }
-      else {
+      // if data:
+      else { 
+        // continue if screen is on.
         if(!this.D) return;
         // Read From Character Generator Rom CGROM
         const hi = this.DR >> 4 & 0x0F;
@@ -210,7 +208,7 @@ export class LcdDeviceService extends Device {
          * The display does not shift if S is 0.
          * 
          */
-        if (!this.S) {
+        if (this.S === 1) {
           if(this.offset >= 0 ){ 
             if(this.AC > this.CHARS_PER_LINE ){
               this.offset += this.ID? 1 : -1;
@@ -218,11 +216,27 @@ export class LcdDeviceService extends Device {
           } else {
             this.offset = this.CHARS_PER_LINE;
           }
+        }else{
+          if(this.AC > this.CHARS_PER_LINE ){
+            this.AC = 0;
+          }
         }
 
+        // if address register is less than 0
+        // go to ddram end
         if(this.AC < 0) this.AC = this.DDRAM_SIZE-1;
+
+        // if Address Register overflow go back to 0
+        // also reset cursor and screen offset
+        if(this.AC > this.DDRAM_SIZE/2){ 
+          this.AC = 0;
+          this.offset = 0;
+          this.cursor = 0;
+        }
+
         this.refreshScreen();
       }
+      this.BF = false; // clear busy
     }
   }
 
@@ -249,15 +263,22 @@ export class LcdDeviceService extends Device {
     if (
       this.GetDataFlag(PORTBIT.DB1) === 1 &&
       this.GetDataFlag(PORTBIT.DB2) === 0 &&
-      this.GetDataFlag(PORTBIT.DB3) === 0
+      this.GetDataFlag(PORTBIT.DB3) === 0 &&
+      this.GetDataFlag(PORTBIT.DB4) === 0 &&
+      this.GetDataFlag(PORTBIT.DB5) === 0 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
     ) this.returnHome();
     /**
      * Entry mode set.
      */
     if (
       this.GetDataFlag(PORTBIT.DB2) === 1 &&
-      this.GetDataFlag(PORTBIT.DB3) === 0
-      
+      this.GetDataFlag(PORTBIT.DB3) === 0 &&
+      this.GetDataFlag(PORTBIT.DB4) === 0 &&
+      this.GetDataFlag(PORTBIT.DB5) === 0 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
     ) this.entryMode();
     /**
      * Display on/off control
@@ -267,7 +288,11 @@ export class LcdDeviceService extends Device {
      * blinking is not implemented
      */
     if (
-      this.GetDataFlag(PORTBIT.DB3) === 1
+      this.GetDataFlag(PORTBIT.DB3) === 1 &&
+      this.GetDataFlag(PORTBIT.DB4) === 0 &&
+      this.GetDataFlag(PORTBIT.DB5) === 0 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
     ){
       this.cursorOnOffControl(!!this.GetDataFlag(PORTBIT.DB1));
       this.displayOnOffControl(!!this.GetDataFlag(PORTBIT.DB2));
@@ -278,13 +303,18 @@ export class LcdDeviceService extends Device {
      * without changing DDRAM contents.
      */
      if (
-      this.GetDataFlag(PORTBIT.DB4) === 1
+      this.GetDataFlag(PORTBIT.DB4) === 1 &&
+      this.GetDataFlag(PORTBIT.DB5) === 0 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
     ) this.cursorDisplayShift();
     /**
      * Function set
      */
     if(
-      this.GetDataFlag(PORTBIT.DB5) === 1
+      this.GetDataFlag(PORTBIT.DB5) === 1 &&
+      this.GetDataFlag(PORTBIT.DB6) === 0 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
     ) this.functionSet();
 
     /**
@@ -371,10 +401,6 @@ export class LcdDeviceService extends Device {
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.turnOnOff(OnOff);
 
-    if (!OnOff && this.interval) {
-      clearInterval(this.interval);
-      return;
-    }
   }
 /**
  * Moves cursor and shifts display without changing DDRAM contents.

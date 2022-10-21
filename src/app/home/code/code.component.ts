@@ -47,12 +47,7 @@ export class CodeComponent implements OnInit, AfterViewInit {
   STA DDRA
   LDA #%11111111
   STA DDRB
-  
-  CLI ; ENEABLE INTERRUPT
-  
   JSR LCD_ON
-  JSR LCD_CLR
-  JSR LCD_HOME
   JSR LCD_ENTRY
   LDX #$00
   JMP @LOOP
@@ -60,17 +55,15 @@ export class CodeComponent implements OnInit, AfterViewInit {
   @LOOP:
       LDA $8900,X
       JSR PRINT
-      ;JSR NEXT
       INX
       TXA
       CMP #31
       BNE @LOOP
-      ;JMP RESTART
       BRK
   ;PGM END
   
   LCD_ENTRY:
-      LDA #%00000110
+      LDA #%00000111
       STA PORTB
       LDA E
       STA PORTA
@@ -80,33 +73,6 @@ export class CodeComponent implements OnInit, AfterViewInit {
   
   LCD_ON:
       LDA #%00001110
-      STA PORTB
-      LDA E
-      STA PORTA
-      LDA #$00
-      STA PORTA
-      RTS
-  
-  LCD_HOME:
-      LDA #%00000010
-      STA PORTB
-      LDA E
-      STA PORTA
-      LDA #$00
-      STA PORTA
-      RTS
-  
-  LCD_CLR:
-      LDA #%00000001
-      STA PORTB
-      LDA E
-      STA PORTA
-      LDA #$00
-      STA PORTA
-      RTS
-  
-  NEXT:
-      LDA #%00000110
       STA PORTB
       LDA E
       STA PORTA
