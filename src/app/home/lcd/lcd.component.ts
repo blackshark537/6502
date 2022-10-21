@@ -34,7 +34,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
     this.lcdCtrl.connectDevice(this);
   }
 
-  fillText(text: string, line=1): void {
+  fillText(line1: string, line2: string): void {
     const ctx = this.canvas.getContext('2d');
     ctx.fillStyle = this.color;
     this.rect()
@@ -42,8 +42,8 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
     ctx.fillStyle = "black";
     ctx.font = "revert"
     ctx.font = "18px Arial";
-    if(line === 1) ctx.fillText(text.toUpperCase(), 10, 25);
-    if(line === 2) ctx.fillText("Line: 2", 10, 50);
+    ctx.fillText(line1.toUpperCase(), 10, 25);
+    
   }
 
   turnOnOff(OnOff: boolean): void {

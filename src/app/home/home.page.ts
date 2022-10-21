@@ -12,7 +12,7 @@ export class HomePage {
   isModalOpen: boolean = localStorage.getItem('modal') === 'false'? false : true;
   isLicense: boolean = false;
   
-  pageTitle: string = 'Welcome'
+  pageTitle: string = '8-Bits Computer'
   version = environment.version;
 
   constructor(

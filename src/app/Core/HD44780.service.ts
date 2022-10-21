@@ -432,15 +432,15 @@ export class LcdDeviceService extends Device {
 
   refreshScreen() {
     let _screen = this.hasDevice(Screen.name) as Screen;
-    _screen.fillText(this.chars);
+    _screen.fillText(this.line1, this.line2);
   }
 
-  get chars(): string {
-    return this.DDRAM.filter((el, i)=> i >= this.offset ).join('');
+  get line1(): string {
+    return this.DDRAM.filter((el, i)=> i < 40 && i >= this.offset ).join('');
   }
 
-  set chars(val: string) {
-    this.DDRAM[this.DDRAM.length-1] = val;
+  get line2(): string {
+    return this.DDRAM.filter((el, i)=> i >= 40 && i >= this.offset ).join('');
   }
 
 }
