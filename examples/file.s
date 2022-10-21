@@ -53,7 +53,6 @@ LDX #$00
     TXA
     CMP #20
     BNE @MSG
-    JSR LCD_CLR
     JSR LCD_HOME
     JMP LOOP
 
@@ -68,6 +67,7 @@ LCD_ENTRY:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_ON:
@@ -77,6 +77,7 @@ LCD_ON:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_HOME:
@@ -86,6 +87,7 @@ LCD_HOME:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_CLR:
@@ -104,6 +106,7 @@ CURSOR_R:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
   
 CURSOR_L:
@@ -113,6 +116,7 @@ CURSOR_L:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 PRINT:
@@ -123,8 +127,18 @@ PRINT:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
+DELAY:
+    LDY #00
+@REPEAT:
+    INY
+    NOP
+    TYA
+    CMP #03
+    BNE @REPEAT
+    RTS
 
 IRQ_HANDLER:
     ; read key

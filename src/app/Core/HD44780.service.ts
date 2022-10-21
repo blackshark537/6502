@@ -130,7 +130,7 @@ export class LcdDeviceService extends Device {
   /**
    * Defines the maximun character by each line
    */
-  private CHARS_PER_LINE = 17;
+  public CHARS_PER_LINE = 16;
 
   constructor() {
     super(LcdDeviceService.name);

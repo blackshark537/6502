@@ -55,12 +55,23 @@ export class CodeComponent implements OnInit, AfterViewInit {
   @LOOP:
       LDA $8900,X
       JSR PRINT
+      JSR DELAY
       INX
       TXA
-      CMP #31
+      CMP #32
       BNE @LOOP
       BRK
   ;PGM END
+
+  DELAY:
+      LDY #00
+  @REPEAT:
+      INY
+      NOP
+      TYA
+      CMP #03
+      BNE @REPEAT
+      RTS
   
   LCD_ENTRY:
       LDA #%00000111
@@ -72,7 +83,7 @@ export class CodeComponent implements OnInit, AfterViewInit {
       RTS
   
   LCD_ON:
-      LDA #%00001110
+      LDA #%00001100
       STA PORTB
       LDA E
       STA PORTA
