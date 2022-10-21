@@ -11,13 +11,16 @@ import { Screen } from 'src/app/Core/interfaces/Screen';
 export class LcdComponent extends Device implements Screen, AfterViewInit {
   @ViewChild('screen', {static: true}) element: ElementRef
   canvas: HTMLCanvasElement;
-  color = "orange";
+  color = "cornflowerblue";//"orange";
   width = 250;
   height = 40;
+  bgImg = new Image();
+
   constructor(
     public lcdCtrl: LcdDeviceService
   ){
     super(Screen.name)
+    this.bgImg.src = "assets/imgs/lcd.png"
   }
 
   read(address: number): number {return 0}
@@ -25,29 +28,44 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   reset(): void {}
   
   ngAfterViewInit(): void {
+    
+    this.bgImg.onload = ()=>{
+      this.display();
+    }
+  }
+
+  display()
+  {
+    this.width = this.bgImg.width-162;
+    this.height = this.bgImg.height-190;
     this.canvas = this.element.nativeElement;
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
+    this.canvas.width = this.bgImg.width;
+    this.canvas.height = this.bgImg.height;
     this.canvas.getContext("2d").fillStyle = "rgb(3, 33, 3)";
-    this.rect()
+    
     this.canvas.getContext("2d").textAlign = "left";
+    this.canvas.getContext("2d").drawImage(this.bgImg, -30, 0 );
     this.lcdCtrl.connectDevice(this);
+    this.rect()
   }
 
   fillText(line1: string, line2: string): void {
     const ctx = this.canvas.getContext('2d');
     ctx.fillStyle = this.color;
+    ctx.drawImage(this.bgImg, -30, 0 );
     this.rect()
     ctx.textAlign = "left";
-    ctx.fillStyle = "black";
-    ctx.font = "revert"
-    ctx.font = "18px Arial";
-    ctx.fillText(line1.toUpperCase(), 10, 25);
-    
+    ctx.font = "bold"
+    ctx.font = "32px Arial";
+    ctx.fillStyle = "gray";
+    ctx.fillStyle = "white";
+    let pos = 70;
+    ctx.fillText(line1.toUpperCase(), pos, 140);
+    ctx.fillText(line2.toUpperCase(), pos, 180);
   }
 
   turnOnOff(OnOff: boolean): void {
-      if(!OnOff)
+      if(OnOff === false)
       {
         this.canvas.getContext("2d").fillStyle = "rgb(3, 33, 3)";
         this.rect()
@@ -58,13 +76,13 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   }
 
   setCursorPos(cursor: number): void {
-    this.canvas.getContext('2d').fillStyle = "black";
-    this.canvas.getContext("2d").fillText("_", cursor*11.2, 27);
+    this.canvas.getContext('2d').fillStyle = "white";
+    this.canvas.getContext("2d").fillText("_", cursor+400, 140);
   }
 
   rect()
   {
-    this.canvas.getContext("2d").fillRect(0,0,this.width, this.height);
+    this.canvas.getContext("2d").fillRect(52,98,this.width, this.height);
   }
 
 }

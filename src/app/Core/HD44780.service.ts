@@ -124,12 +124,13 @@ export class LcdDeviceService extends Device {
   /**
    * offset helper is used to shift the display
    */
-  private offset: number = 0;
+  private offset1: number = 0;
+  private offset2: number = 40;
 
   /**
    * Defines the maximun character by each line
    */
-  private CHARS_PER_LINE = 20;
+  private CHARS_PER_LINE = 17;
 
   constructor() {
     super(LcdDeviceService.name);
@@ -147,7 +148,7 @@ export class LcdDeviceService extends Device {
     this.SetDataFlag(PORTBIT.DB7, this.BF);
     this.clearDisplay();
     this.returnHome();
-    this.N = 0;
+    this.N = 1;
     this.D = 0;
     this.C = 0;
     this.B = 0;
@@ -195,7 +196,7 @@ export class LcdDeviceService extends Device {
         const lo = this.DR & 0x0F;
         const char = this.CGROM[lo][hi];
         // Put character into DDRAM
-        this.DDRAM[this.AC] = char;
+        this.DDRAM[this.cursor] = char;
         this.AC += this.ID? 1 : -1; //Increment Address Counter
         this.cursor = this.AC;
         
@@ -209,15 +210,19 @@ export class LcdDeviceService extends Device {
          * 
          */
         if (this.S === 1) {
-          if(this.offset >= 0 ){ 
-            if(this.AC > this.CHARS_PER_LINE ){
-              this.offset += this.ID? 1 : -1;
+          if(this.offset1 >= 0 ){ 
+            if(this.AC < 40 && this.AC > this.CHARS_PER_LINE){
+              this.offset1 += this.ID? 1 : -1;
+            }
+            if(this.AC >= 40 && this.AC > this.CHARS_PER_LINE + 40 ){
+              this.offset2 += this.ID? 1 : -1;
             }
           } else {
-            this.offset = this.CHARS_PER_LINE;
+            this.offset1 = this.CHARS_PER_LINE;
+            this.offset2 = this.CHARS_PER_LINE + 40;
           }
-        }else{
-          if(this.AC > this.CHARS_PER_LINE ){
+        } else {
+          if(this.AC > this.CHARS_PER_LINE && this.N === 0){
             this.AC = 0;
           }
         }
@@ -228,9 +233,10 @@ export class LcdDeviceService extends Device {
 
         // if Address Register overflow go back to 0
         // also reset cursor and screen offset
-        if(this.AC > this.DDRAM_SIZE/2){ 
+        if(this.AC > this.DDRAM_SIZE){ 
           this.AC = 0;
-          this.offset = 0;
+          this.offset1 = 0;
+          this.offset2 = 0;
           this.cursor = 0;
         }
 
@@ -375,7 +381,8 @@ export class LcdDeviceService extends Device {
    */
   private returnHome() {
     this.AC = 0;
-    this.offset = 0;
+    this.offset1 = 0;
+    this.offset2 = 0;
     this.cursor = 0;
   }
 
@@ -433,14 +440,15 @@ export class LcdDeviceService extends Device {
   refreshScreen() {
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.fillText(this.line1, this.line2);
+    //_screen.setCursorPos(this.cursor+this.offset);
   }
 
   get line1(): string {
-    return this.DDRAM.filter((el, i)=> i < 40 && i >= this.offset ).join('');
+    return this.DDRAM.filter((el, i)=> i < 40 && i >= this.offset1 ).join('');
   }
 
   get line2(): string {
-    return this.DDRAM.filter((el, i)=> i >= 40 && i >= this.offset ).join('');
+    return this.DDRAM.filter((el, i)=> i >= 40 && i >= this.offset2 ).join('');
   }
 
 }
