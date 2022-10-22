@@ -196,12 +196,11 @@ export class LcdDeviceService extends Device {
         const lo = this.DR & 0x0F;
         const char = this.CGROM[lo][hi];
         // Put character into DDRAM
-        this.DDRAM[this.cursor] = char;
+        this.DDRAM[this.AC] = char;
         this.AC += this.ID? 1 : -1; //Increment Address Counter
-        this.cursor = this.AC;
-        
-        // draw the cursor
-        if(this.C) this.DDRAM[this.cursor] = '_';
+
+        if(this.cursor>=0 && this.cursor < this.CHARS_PER_LINE-1) 
+          this.cursor = this.AC;
 
         /**
          * Shifts the entire display either to the right (I/D = 1) or 
@@ -381,9 +380,9 @@ export class LcdDeviceService extends Device {
    */
   private returnHome() {
     this.AC = 0;
+    this.cursor = 0;
     this.offset1 = 0;
     this.offset2 = 0;
-    this.cursor = 0;
   }
 
   /**
@@ -407,7 +406,6 @@ export class LcdDeviceService extends Device {
     this.D = OnOff ? 1 : 0;
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.turnOnOff(OnOff);
-
   }
 /**
  * Moves cursor and shifts display without changing DDRAM contents.
@@ -440,7 +438,6 @@ export class LcdDeviceService extends Device {
   refreshScreen() {
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.fillText(this.line1, this.line2);
-    //_screen.setCursorPos(this.cursor+this.offset);
   }
 
   get line1(): string {
@@ -449,6 +446,10 @@ export class LcdDeviceService extends Device {
 
   get line2(): string {
     return this.DDRAM.filter((el, i)=> i >= 40 && i >= this.offset2 ).join('');
+  }
+
+  get cursorPos(): number{
+    return this.cursor;
   }
 
 }

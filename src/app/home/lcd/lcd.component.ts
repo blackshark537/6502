@@ -16,6 +16,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   height = 200;
   bgImg = new Image();
   CHARS_PER_LINE = 0;
+  contrast = .4;
 
   constructor(
     public lcdCtrl: LcdDeviceService
@@ -43,30 +44,43 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
     this.canvas.height = this.height;
     const ctx = this.canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
-    ctx.textAlign = "left";
+    ctx.textAlign = "center";
+    ctx.font = "bold"
+    ctx.font = "35px oswald";
     ctx.drawImage(this.bgImg, -30, 0,this.width, this.height);
     
     this.lcdCtrl.connectDevice(this);
     this.turnOnOff(false);
   }
 
-  fillText(line1: string, line2: string): void {
+  fillText(): void {
+    const parent = (this.parent as LcdDeviceService);
     
-    const ctx = this.canvas.getContext('2d');
-    ctx.fillStyle = this.color;
-    this.rect()
+    const c = parent.cursorPos;
 
-    ctx.textAlign = "center";
-    ctx.font = "bold"
-    ctx.font = "35px oswald";
-    for (let i = 0; i < this.CHARS_PER_LINE; i++) {
-      let ch = line1[i]?? ' ';
-      ctx.fillStyle = 'rgb(11, 94, 134)';
-      ctx.fillRect(47+(15.5*i), 75, 14, 27);
-      ctx.fillStyle = "white";
-      ctx.fillText(ch, 55+(15.3*i), 75+22);
-    }
+    const ctx = this.canvas.getContext('2d');
     
+    ctx.fillStyle = this.color;
+    this.rect();
+
+    const line1 = parent.line1;
+    const line2 = parent.line2;
+
+    for (let i = 0; i < this.CHARS_PER_LINE; i++) {
+      
+      let ch = line1[i]?? ' ';
+      let ch2 = line2[i]?? ' ';
+      ctx.fillStyle = "white";
+
+      ctx.fillText('_', 55+(15.5* c), 75+27);
+
+      ctx.fillText(ch, 55+(15.3*i), 75+22);
+      ctx.fillText(ch2, 55+(15.3*i), 104+22);
+
+      ctx.fillStyle = `rgba(10, 11, 237,${this.contrast})`;
+      ctx.fillRect(47+(15.5*i), 75, 14, 27);
+      ctx.fillRect(47+(15.5*i), 104, 14, 27);
+    }
   }
 
   turnOnOff(OnOff: boolean): void {
@@ -78,11 +92,6 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
         this.canvas.getContext("2d").fillStyle = this.color;
         this.rect()
       }
-  }
-
-  setCursorPos(cursor: number): void {
-    this.canvas.getContext('2d').fillStyle = "white";
-    this.canvas.getContext("2d").fillText("_", cursor+400, 140);
   }
 
   rect()
