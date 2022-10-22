@@ -6,6 +6,7 @@ import { DeviceInfo, DeviceState } from "./interfaces";
 import { VIADeviceService } from "./VIA6522.service";
 import { LcdDeviceService } from "./HD44780.service";
 import { LcdComponent } from "../home/lcd/lcd.component";
+import { KeyboardDeviceService } from "./Keyboard.service";
 
 @Injectable({
     providedIn: 'root'
@@ -21,11 +22,12 @@ export class ComputerService {
         private memory: MemoryService,
         private lcd: LcdDeviceService,
         private via: VIADeviceService,
+        private keyboard: KeyboardDeviceService
     ) { 
         this.cpu.connectDevice(this.memory);
         this.cpu.connectDevice(this.via);
         this.via.connectDevice(this.lcd);
-        
+        this.via.connectDevice(this.keyboard);
         this.clock$ = interval(this.freq);
     }
 

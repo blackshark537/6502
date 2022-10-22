@@ -175,9 +175,9 @@ export class CPU6502 extends Device{
      */
     read(a: number): number{
         if(a >= 0x6000 && a<=0x6fff){ 
-            return this.childs?.filter(el => el instanceof VIADeviceService)[0].read(a); //this.Via.read(a);
+            return this.hasDevice(VIADeviceService.name)?.read(a); //this.Via.read(a);
         }
-        return  this.childs?.filter(el=> el instanceof MemoryService)[0].read(a);
+        return  this.hasDevice(MemoryService.name)?.read(a);
     }
 
     /**
@@ -187,9 +187,9 @@ export class CPU6502 extends Device{
      */
     write(a: number, d: number): void{
         if(a >= 0x6000 && a<=0x6fff){ 
-             this.childs?.filter(el=> el instanceof VIADeviceService)[0].write(a, d);
+             this.hasDevice(VIADeviceService.name)?.write(a, d);
         }
-        this.childs?.filter(el=> el instanceof MemoryService)[0].write(a, d);
+        this.hasDevice(MemoryService.name)?.write(a, d);
     }
 
     ///////////////////////////////////////////////////////////////////////////////

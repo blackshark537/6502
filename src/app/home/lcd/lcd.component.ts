@@ -12,8 +12,8 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   @ViewChild('screen', {static: true}) element: ElementRef
   canvas: HTMLCanvasElement;
   color = "cornflowerblue";//"orange";
-  width = 250;
-  height = 40;
+  width = 400;
+  height = 200;
   bgImg = new Image();
   CHARS_PER_LINE = 0;
 
@@ -38,15 +38,14 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
 
   display()
   {
-    this.width = this.bgImg.width-162;
-    this.height = this.bgImg.height-190;
     this.canvas = this.element.nativeElement;
-    this.canvas.width = this.bgImg.width;
-    this.canvas.height = this.bgImg.height;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
     const ctx = this.canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
     ctx.textAlign = "left";
-    ctx.drawImage(this.bgImg, -30, 0 );
+    ctx.drawImage(this.bgImg, -30, 0,this.width, this.height);
+    
     this.lcdCtrl.connectDevice(this);
     this.turnOnOff(false);
   }
@@ -55,21 +54,19 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
     
     const ctx = this.canvas.getContext('2d');
     ctx.fillStyle = this.color;
-    ctx.drawImage(this.bgImg, -30, 0 );
     this.rect()
 
     ctx.textAlign = "center";
     ctx.font = "bold"
-    ctx.font = "40px Arial";
-
+    ctx.font = "35px oswald";
     for (let i = 0; i < this.CHARS_PER_LINE; i++) {
       let ch = line1[i]?? ' ';
       ctx.fillStyle = 'rgb(11, 94, 134)';
-      ctx.fillRect(75+(24.5*i), 110, 22, 39);
+      ctx.fillRect(47+(15.5*i), 75, 14, 27);
       ctx.fillStyle = "white";
-      ctx.fillText(ch, 87+(24.5*i), 110+33);
+      ctx.fillText(ch, 55+(15.3*i), 75+22);
     }
-    //ctx.fillText(line2.toUpperCase(), pos, 180);
+    
   }
 
   turnOnOff(OnOff: boolean): void {
@@ -90,7 +87,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
 
   rect()
   {
-    this.canvas.getContext("2d").fillRect(52,98,this.width, this.height);
+    this.canvas.getContext("2d").fillRect(22,52, 298, 98);
   }
 
 }

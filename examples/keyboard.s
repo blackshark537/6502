@@ -33,8 +33,6 @@ STA DDRB
 CLI ; ENEABLE INTERRUPT
 
 JSR LCD_ON
-JSR LCD_CLR
-JSR LCD_HOME
 JSR LCD_ENTRY
 LDY #$0B
 LDX #$00
@@ -54,13 +52,24 @@ LOOP:
     NOP
     JMP LOOP
 
+DELAY:
+    LDY #00
+@REPEAT:
+    INY
+    NOP
+    TYA
+    CMP #03
+    BNE @REPEAT
+    RTS
+
 LCD_ENTRY:
-    LDA #%00000110
+    LDA #%00000111
     STA PORTB
     LDA E
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_ON:
@@ -70,6 +79,7 @@ LCD_ON:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_HOME:
@@ -79,6 +89,7 @@ LCD_HOME:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 LCD_CLR:
@@ -88,6 +99,7 @@ LCD_CLR:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 CURSOR_R:
@@ -97,6 +109,7 @@ CURSOR_R:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
   
 CURSOR_L:
@@ -106,6 +119,7 @@ CURSOR_L:
     STA PORTA
     LDA #$00
     STA PORTA
+    JSR DELAY
     RTS
 
 PRINT:
@@ -115,7 +129,7 @@ PRINT:
     STA PORTA
     LDA #$00
     STA PORTA
-    ;JSR CURSOR_R
+    JSR DELAY
     RTS
 
 

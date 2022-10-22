@@ -4,6 +4,7 @@ import { Device } from "./interfaces/Device";
 import { CPU6502 } from "./CPU6502.service";
 import { PORTBIT } from "./interfaces";
 import { LcdDeviceService } from "./HD44780.service";
+import { KeyboardDeviceService } from "./Keyboard.service";
 
 // Needs to be refactorized, devices like keyboard and lcd are extremly couple.
 @Injectable({
@@ -18,8 +19,8 @@ export class VIADeviceService extends Device{
     private IFR: number = 0x00;
     private ddra: number = 0x00;
     private ddrb: number = 0x00;
-    private portb: number = 0x00;
-    private porta: number = 0x00;
+    public portb: number = 0x00;
+    public porta: number = 0x00;
 
     /**
      * Helper Variables
@@ -57,6 +58,7 @@ export class VIADeviceService extends Device{
             const value = Math.floor(Math.random() * 0xFF).toString();
             return parseInt(value, 16);
         }
+
         if(address === 0x6000) return this.portb;
         if(address === 0x6001) return this.porta;
     }
@@ -72,7 +74,7 @@ export class VIADeviceService extends Device{
 
         if(this.isLcd)
         {
-            const lcd = this.childs.find(child => child instanceof LcdDeviceService);
+            const lcd = this.hasDevice(LcdDeviceService.name);
             if(lcd) lcd.write((this.portb & this.ddrb), (this.porta & this.ddra));
         }
 
@@ -140,16 +142,10 @@ export class VIADeviceService extends Device{
     }
 
     set connectKeyboard(value: boolean) {
-        if (!this.isKeboard) {
-            this.isKeboard = value;
-            addEventListener('keyup', ev => {
-                ev.preventDefault();
-                const code = ev.keyCode;
-                this.portb = (code);
-                this.dispatchiIRQ();
-            }, true);
-        } else {
-            removeEventListener('keyup', null, true);
+        this.isKeboard = value;
+        if(this.isKeboard){
+            const kb = this.hasDevice(KeyboardDeviceService.name) as KeyboardDeviceService;
+            if(kb) kb.TurnOn();
         }
     }
 
