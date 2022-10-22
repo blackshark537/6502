@@ -101,7 +101,7 @@ export class CodeComponent implements OnInit, AfterViewInit {
       RTS
   
   .org $8900
-  .byte "Welcome To 6502 8-Bits Computer.   "
+  .byte "Welcome To 6502 8-Bits Computer."
   
   .org RESB
   .addr RESTART  

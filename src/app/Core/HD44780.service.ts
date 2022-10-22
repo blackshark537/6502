@@ -148,7 +148,7 @@ export class LcdDeviceService extends Device {
     this.SetDataFlag(PORTBIT.DB7, this.BF);
     this.clearDisplay();
     this.returnHome();
-    this.N = 1;
+    this.N = 0;
     this.D = 0;
     this.C = 0;
     this.B = 0;
@@ -206,24 +206,20 @@ export class LcdDeviceService extends Device {
          * Shifts the entire display either to the right (I/D = 1) or 
          * to the left (I/D = 0) when S is 1. 
          * The display does not shift if S is 0.
-         * 
          */
         if (this.S === 1) {
           if(this.offset1 >= 0 ){ 
-            if(this.AC < 40 && this.AC > this.CHARS_PER_LINE){
+            if(this.AC < (this.N? 40 : 80) && this.AC > this.CHARS_PER_LINE){
               this.offset1 += this.ID? 1 : -1;
             }
-            if(this.AC >= 40 && this.AC > this.CHARS_PER_LINE + 40 ){
+          }
+
+          if(this.offset2 >= 0 ){ 
+            if(this.AC > 40 && this.AC > (40 + this.CHARS_PER_LINE)){
               this.offset2 += this.ID? 1 : -1;
             }
-          } else {
-            this.offset1 = this.CHARS_PER_LINE;
-            this.offset2 = this.CHARS_PER_LINE + 40;
           }
-        } else {
-          if(this.AC > this.CHARS_PER_LINE && this.N === 0){
-            this.AC = 0;
-          }
+
         }
 
         // if address register is less than 0
@@ -441,11 +437,11 @@ export class LcdDeviceService extends Device {
   }
 
   get line1(): string {
-    return this.DDRAM.filter((el, i)=> i < 40 && i >= this.offset1 ).join('');
+    return this.DDRAM.filter((el, i)=> i < (this.N? 40 : 80) && i >= this.offset1 ).join('');
   }
 
   get line2(): string {
-    return this.DDRAM.filter((el, i)=> i >= 40 && i >= this.offset2 ).join('');
+    return this.DDRAM.filter((el, i)=> !!this.N && i >= 39 + this.offset2 ).join('');
   }
 
   get cursorPos(): number{
