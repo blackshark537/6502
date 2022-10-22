@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1666393080400,
+  "timestamp": 1666400266797,
   "index": "/6502/index.html",
   "assetGroups": [
     {
@@ -49,7 +49,7 @@
         "/6502/6120.cdaec59118f4a099.js",
         "/6502/6560.c74dd6e099f43ba7.js",
         "/6502/657.1153831d64dfb76a.js",
-        "/6502/7099.c5c9aaa9c9ef205f.js",
+        "/6502/7054.ba2f46c91cce4680.js",
         "/6502/7544.65bce2cb6f87c959.js",
         "/6502/7602.dab0627192dcee87.js",
         "/6502/8136.01312615c3c57e2a.js",
@@ -67,13 +67,13 @@
         "/6502/9958.adb5d0ec2b13706e.js",
         "/6502/common.09567476f58a842b.js",
         "/6502/index.html",
-        "/6502/main.b94d6a2286373442.js",
+        "/6502/main.3c5f5fe54f276707.js",
         "/6502/manifest.webmanifest",
         "/6502/polyfills-core-js.b3eb16f0f64e9b8c.js",
         "/6502/polyfills-dom.3a5e3168052f1fc5.js",
         "/6502/polyfills.a20780bee94baa08.js",
-        "/6502/runtime.a3a47ff27b9fc947.js",
-        "/6502/styles.9c20b57c5f431e5c.css"
+        "/6502/runtime.adcefb565bed9bf2.js",
+        "/6502/styles.89899d38eb702bf8.css"
       ],
       "patterns": []
     },
@@ -85,6 +85,10 @@
         "ignoreVary": true
       },
       "urls": [
+        "/6502/VT323-Regular.8a84c91cf273ff81.ttf",
+        "/6502/assets/fonts/Minecraft.ttf",
+        "/6502/assets/fonts/VT323-Regular.ttf",
+        "/6502/assets/fonts/hd44780.ttf",
         "/6502/assets/icon/6502.png",
         "/6502/assets/icon/favicon.png",
         "/6502/assets/icons/icon-128x128.png",
@@ -1271,7 +1275,7 @@
     "/6502/6120.cdaec59118f4a099.js": "35768a01a9c2c0974b9af8d4740747d2af46a88a",
     "/6502/6560.c74dd6e099f43ba7.js": "1917c0429b14f85bf83f06feafaa85945bf246ac",
     "/6502/657.1153831d64dfb76a.js": "78e0723c592381dee6c08914ff31bcb79230d8f8",
-    "/6502/7099.c5c9aaa9c9ef205f.js": "5e8cbff8e5dfa40b8fb0207fe0aa1fe7511d8cac",
+    "/6502/7054.ba2f46c91cce4680.js": "9a766a2e9eb44ac1a06b5249d71228199c41ca40",
     "/6502/7544.65bce2cb6f87c959.js": "2a0fe6f9223b323186847c7b36f8419bee881d15",
     "/6502/7602.dab0627192dcee87.js": "e4ba9204750f340df6690f1945e87a0c9b1c51a1",
     "/6502/8136.01312615c3c57e2a.js": "d1c271c27833f1aef9e76af94326ef82aa133d32",
@@ -1287,6 +1291,10 @@
     "/6502/9824.72592d7279d164c7.js": "1cf10f16093cdbac3946fed762d9b1354da64c18",
     "/6502/9922.cbd7f054a4aa9f91.js": "c170ff3a8721be525bcc7b13505d41a9ad6f94a7",
     "/6502/9958.adb5d0ec2b13706e.js": "1c2b6bb585e8a3b17263a1a5756f84f5b3693096",
+    "/6502/VT323-Regular.8a84c91cf273ff81.ttf": "5b82551f049f002f6f30e6fd1af157d22062d77f",
+    "/6502/assets/fonts/Minecraft.ttf": "adeaf75e88666e1987255be09e7bcc452bb4722d",
+    "/6502/assets/fonts/VT323-Regular.ttf": "5b82551f049f002f6f30e6fd1af157d22062d77f",
+    "/6502/assets/fonts/hd44780.ttf": "2b465aa7f651026b99ce35f4a1f1d722e014c440",
     "/6502/assets/icon/6502.png": "5d0c2d00b14528642545a5ff8c16a6e2e66c99de",
     "/6502/assets/icon/favicon.png": "7798b8e0eb61d7375c245af78bbf5c916932bf13",
     "/6502/assets/icons/icon-128x128.png": "dae3b6ed49bdaf4327b92531d4b5b4a5d30c7532",
@@ -2430,14 +2438,14 @@
     "/6502/assets/monaco-editor/monaco.d.ts": "4d9a1b29f656a6aba874610b87cb3e843f2fc678",
     "/6502/assets/monaco-editor/package.json": "8045fa3fd36da0d175e302268ece8c29bbdbcf36",
     "/6502/common.09567476f58a842b.js": "accf456e202ab9383a581033bf332191ce233694",
-    "/6502/index.html": "277f9e642e658a0a5ba6cda6194bce17e126c647",
-    "/6502/main.b94d6a2286373442.js": "294480b5570951a95e4290976736a89e1c61d59c",
+    "/6502/index.html": "0f698fcc5c971f6055b3da6636b03d446862d4be",
+    "/6502/main.3c5f5fe54f276707.js": "b3d71f613801c66763c56e6d7b90d63f0f0dfd40",
     "/6502/manifest.webmanifest": "a6821c579ed47e0728631a4467f4520600d4e732",
     "/6502/polyfills-core-js.b3eb16f0f64e9b8c.js": "74f73ddfbee814abfb2702e1dd9ca4c9ddb994c5",
     "/6502/polyfills-dom.3a5e3168052f1fc5.js": "50f6ff473a0568bffb8a9d412d7efaced2d36137",
     "/6502/polyfills.a20780bee94baa08.js": "d4487d600064e0cffdd6c414f1b90c8908987215",
-    "/6502/runtime.a3a47ff27b9fc947.js": "125339d4541ed63edb985a82eaedc0e228d146b3",
-    "/6502/styles.9c20b57c5f431e5c.css": "5ef07c15e60fd8704863d19c71dc383ada8deec7"
+    "/6502/runtime.adcefb565bed9bf2.js": "9366ff6b6233466f70117360d0f17ed7d1b408a6",
+    "/6502/styles.89899d38eb702bf8.css": "074241ccca6026cc839b746df818b642c8c12bf3"
   },
   "navigationUrls": [
     {
