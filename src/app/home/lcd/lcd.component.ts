@@ -52,8 +52,6 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
     ctx.textAlign = "center";
     ctx.font = "bold"
     ctx.font = "35px oswald";
-    ctx.drawImage(this.bgImg, -30, 0,this.width, this.height);
-    
     this.lcdCtrl.connectDevice(this);
     this.turnOnOff(false);
   }
@@ -87,6 +85,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
       ctx.fillRect(47+(15.3*i), 75, 14, 27); //up
       ctx.fillRect(47+(15.3*i), 104, 14, 27); // down
     }
+    ctx.drawImage(this.bgImg, -30, 0,this.width, this.height);
   }
 
   turnOnOff(OnOff: boolean): void {
@@ -98,6 +97,8 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
         this.canvas.getContext("2d").fillStyle = this.color;
         this.rect()
       }
+      this.canvas.getContext("2d")
+      .drawImage(this.bgImg, -30, 0,this.width, this.height);
   }
 
   rect()
