@@ -25,6 +25,7 @@
               <ion-item href="https://www.middle-engine.com/blog/posts/2020/06/23/programming-the-nes-the-6502-in-detail" target="_blank" [button]="true" [detail]="true">6502 in detail</ion-item>
               <ion-item href="https://www.youtube.com/watch?v=LnzuMJLZRdU&list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH" target="_blank" [button]="true" [detail]="true">6502 from scratch</ion-item>
               <ion-item (click)="isLicense = !isLicense" [button]="true" [detail]="true">License</ion-item>
+              <ion-item (click)="modal.present()" [button]="true" [detail]="false">Help?</ion-item>
               <ion-item (click)="about()" [button]="true" [detail]="false">About?</ion-item>
             </ion-list>
           </ion-content>
@@ -128,15 +129,11 @@
                   <h1>6502 8-Bits Computer. {{version}}</h1>
                 </ion-title>
               </ion-toolbar>
-              <div [ngStyle]="{height: '40vh', overflowY: 'scroll'}">
-                <ion-text [ngStyle]="{
-                  height: '45vh',
-                  overfloat: 'scroll',
-                  padding: '2em'
-                }">
+              <div >
+                <ion-text >
                 <h3>What</h3>
                 <p>Emulation of a simple 8-Bits computer based on the famous 6502 chip.
-                Supports the original 56 legal instructions even interrupts like NMI and IRQ. Inspired in the
+                Supports all the 56 original instructions even interrupts like NMI and IRQ. Inspired in the
                   <a href="https://www.youtube.com/watch?v=LnzuMJLZRdU&list=PLowKtXNTBypFbtuVMUVXNR0z1mu7dp7eH" target="_blank" rel="noopener noreferrer">Ben Eater 6502 YouTube</a> Serie.</p>
                 <p>The 6502 code is a port to typescript from the <a href="https://www.youtube.com/watch?v=8XmxKPJDGU0" target="_blank" rel="noopener noreferrer">javidx9 C++ 6502 Implementation</a>.</p>
                 
