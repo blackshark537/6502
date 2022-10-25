@@ -2,11 +2,33 @@
   <ion-card-subtitle style="margin-left: 1em;">
     LCD hd44780 {{CHARS_PER_LINE}}x2
   </ion-card-subtitle>
-  <ion-range [ngStyle]="{padding: '0px'}" (ionChange)="fillText()" [max]="1" [step]=".1" [min]=".2" [(ngModel)]="contrast">
-    <ion-icon slot="end" name="sunny-outline"></ion-icon>
-  </ion-range>
-  <ion-card-content style="padding: 0px;">
-    <!-- <textarea #lcd [(ngModel)]="lcdCtrl.chars" readonly class="dottedText {{lcdCtrl.displayOnOff? 'lcd-on' : 'lcd-off'}}" name="display" id="display" cols="16" rows="2" maxlength="32"></textarea> -->
-    <canvas #screen id="screen"></canvas>
-  </ion-card-content>
+    
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-range (ionChange)="fillText()" [max]="1" [step]=".1" [min]=".2" [(ngModel)]="contrast">
+            <ion-icon slot="end" name="sunny-outline"></ion-icon>
+          </ion-range>
+        </ion-col>
+        <ion-col size="6"></ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="9">
+          <canvas #screen id="screen"></canvas>
+        </ion-col>
+        <ion-col size="3">
+          <ion-label >
+            <ion-icon name="warning" color="warning"></ion-icon>
+            <p>Just work with one line for now, and</p>
+            <p>may have some bugs.</p>
+          </ion-label>
+          <!-- <h5 style="color: var(--ion-color-dark);">Registers Status:</h5>
+          <p style="color: var(--ion-color-dark);">ADD: {{lcdCtrl.internalState().address}}</p>
+          <p style="color: var(--ion-color-dark);">CURSOR:{{lcdCtrl.internalState().cursor}}</p>
+          <p style="color: var(--ion-color-dark);">OFFSET1: {{lcdCtrl.internalState().offset1}}</p>
+          <p style="color: var(--ion-color-dark);">OFFSET2: {{lcdCtrl.internalState().offset2}}</p> -->
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  
 </ion-card>

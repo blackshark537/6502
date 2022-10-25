@@ -5,14 +5,13 @@ import { CPU6502 } from "./CPU6502.service";
 import { DeviceInfo, DeviceState } from "./interfaces";
 import { VIADeviceService } from "./VIA6522.service";
 import { LcdDeviceService } from "./HD44780.service";
-import { LcdComponent } from "../home/lcd/lcd.component";
 import { KeyboardDeviceService } from "./Keyboard.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ComputerService {
-    private freq: number = 3;
+    private freq: number = 1;
 
     public clock$: Observable<any>;
     private sub$: Subscription;
@@ -39,7 +38,7 @@ export class ComputerService {
 
     get status(): DeviceState
     {
-        return this.cpu.cpu_status() as any;
+        return this.cpu.internalState() as any;
     }
 
     get clock(): Observable<number>

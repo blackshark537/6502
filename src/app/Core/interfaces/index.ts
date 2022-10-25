@@ -49,6 +49,14 @@ export enum HD44780
     E  = (1 << 7),	// Starts data read/write
 };
 
+export interface HD44780_STATUS{
+    cursor  : number;
+    address : number;
+    offset1 : number;
+    offset2 : number;
+    busy    : number;
+}
+
 export interface DeviceInfo { device: string; fabricant: string; year: string; clock: string };
 
 export interface DeviceState{

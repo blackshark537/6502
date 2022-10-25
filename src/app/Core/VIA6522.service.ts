@@ -34,8 +34,8 @@ export class VIADeviceService extends Device{
     /**
      * Ports Observables
      */
-    private _PORTA$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
-    private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
+    //private _PORTA$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
+    //private _PORTB$ = new BehaviorSubject<[number, number]>([0x00, 0x00]);
     
     constructor(
     ) { 
@@ -78,9 +78,13 @@ export class VIADeviceService extends Device{
             if(lcd) lcd.write((this.portb & this.ddrb), (this.porta & this.ddra));
         }
 
-        this._PORTB$.next([this.ddrb, this.portb]);
-        this._PORTA$.next([this.ddra, this.porta]);
+        //this._PORTB$.next([this.ddrb, this.portb]);
+        //this._PORTA$.next([this.ddra, this.porta]);
     
+    }
+
+    internalState(): Object {
+        return {}
     }
 
     // Interrup Eneable register
@@ -114,13 +118,13 @@ export class VIADeviceService extends Device{
         }
     }
 
-    get PORTA$(): Observable<[number, number]> {
+    /* get PORTA$(): Observable<[number, number]> {
         return this._PORTA$.asObservable();
     }
 
     get PORTB$(): Observable<[number, number]> {
         return this._PORTB$.asObservable();
-    }
+    } */
 
     get connectRandomDevice(): boolean {
         return this.isRandom;

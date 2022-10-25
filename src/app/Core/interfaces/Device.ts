@@ -32,4 +32,5 @@ export abstract class Device{
     abstract write(address: number, data: number): void;
     abstract read(address: number): number;
     abstract reset(): void;
+    abstract internalState(): Object;
 }

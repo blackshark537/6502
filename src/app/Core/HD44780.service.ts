@@ -13,7 +13,7 @@
 
 import { Injectable } from "@angular/core";
 import { Device } from "./interfaces/Device";
-import { HD44780, PORTBIT } from "./interfaces";
+import { HD44780, HD44780_STATUS, PORTBIT } from "./interfaces";
 import { Screen } from "./interfaces/Screen";
 
 @Injectable({
@@ -157,6 +157,8 @@ export class LcdDeviceService extends Device {
     this.RL = 0;
     this.SC = 0;
     this.BF = false;
+    this.AC = 0;
+    this.cursor=0;
     this.SetDataFlag(PORTBIT.DB7, this.BF);
   }
 
@@ -199,8 +201,10 @@ export class LcdDeviceService extends Device {
         this.DDRAM[this.AC] = char;
         this.AC += this.ID? 1 : -1; //Increment Address Counter
 
-        if(this.cursor>=0 && this.cursor < this.CHARS_PER_LINE-1) 
+        if(this.cursor>=0 && this.cursor < this.CHARS_PER_LINE-1) {
           this.cursor = this.AC;
+          if(this.cursor >= this.CHARS_PER_LINE) this.cursor = this.CHARS_PER_LINE-1;
+        }
 
         /**
          * Shifts the entire display either to the right (I/D = 1) or 
@@ -241,6 +245,18 @@ export class LcdDeviceService extends Device {
     }
   }
 
+  /**
+   * 
+   */
+  public internalState(): HD44780_STATUS {
+      return {
+        cursor: this.cursor,
+        address: this.AC,
+        offset1: this.offset1,
+        offset2: this.offset2,
+        busy: this.GetDataFlag(PORTBIT.DB7),
+      }
+  }
  /**
  * Decode Instructions.
  */
@@ -325,6 +341,10 @@ export class LcdDeviceService extends Device {
      * 2 - Sets DDRAM address. DDRAM data is sent and received after this setting.
      * 
      */
+    if(
+      this.GetDataFlag(PORTBIT.DB6) === 1 &&
+      this.GetDataFlag(PORTBIT.DB7) === 0 
+    ) this.setCGramAdd();
 
     /**
      * Read busy flag & address
@@ -355,7 +375,7 @@ export class LcdDeviceService extends Device {
    */
   private functionSet()
   {
-    this.N = this.GetDataFlag(PORTBIT.DB3);
+    //this.N = this.GetDataFlag(PORTBIT.DB3);
   }
 
   /**
@@ -398,7 +418,7 @@ export class LcdDeviceService extends Device {
    * Sets entire display (D) on/off, 
    * Command 0x0C Display    0x0C: On  0x08: Off
    */
-  displayOnOffControl(OnOff = false) {
+  private displayOnOffControl(OnOff = false) {
     this.D = OnOff ? 1 : 0;
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.turnOnOff(OnOff);
@@ -410,16 +430,42 @@ export class LcdDeviceService extends Device {
  * In a 2-line display, the cursor moves to the second line when it passes the 40th digit of the first line. 
  * Note that the first and second line displays will shift at the same time.
  */
-  cursorDisplayShift()
+ private cursorDisplayShift()
   {
     this.RL = this.GetDataFlag(PORTBIT.DB2);
     this.SC = this.GetDataFlag(PORTBIT.DB3);
+    /**
+     *  S/C   R/L
+     *  0     0  Shifts the cursor position to the left.(AC is decremented by one.)
+     *  0     1  Shifts the cursor position to the right. (AC is incremented by one.)
+     *  1     0  Shifts the entire display to the left. The cursor follows the display shift.
+     *  1     1  Shifts the entire display to the right. The cursor follows the display shift.
+     */
+    if(!this.SC && !this.RL){
+      this.cursor -= 1;
+      //this.AC = this.cursor;
+    }else if(!this.SC && !!this.RL){
+      this.cursor += 1;
+      //this.AC = this.cursor;
+    }
+
+    if(!!this.SC && !this.RL){
+        this.offset1 += -1;
+        this.offset2 += -1;
+        this.cursor += 1;
+    }else if(!!this.SC && !!this.RL){
+      this.offset1 += 1;
+      this.offset2 += 1;
+      this.cursor += -1;
+    }
+    this.AC = this.cursor;
+    this.refreshScreen();
   }
 
   /**
   * cursor on/off (C)
   */
-  cursorOnOffControl(OnOff: boolean) {
+   private cursorOnOffControl(OnOff: boolean) {
     this.C = OnOff ? 1 : 0;
   }
 
@@ -429,9 +475,18 @@ export class LcdDeviceService extends Device {
    * 
    * Not implementing blink
    */
-   blinkCursor() {}
+   private  blinkCursor() {}
 
-  refreshScreen() {
+   /**
+    * Set CGRAM address sets the CGRAM address binary AAAAAA into the address counter. 
+    * Data is then written to or read from the MPU for CGRAM.
+    */
+  setCGramAdd()
+  {
+
+  }
+
+  private refreshScreen() {
     let _screen = this.hasDevice(Screen.name) as Screen;
     _screen.fillText(this.line1, this.line2);
   }
@@ -445,7 +500,7 @@ export class LcdDeviceService extends Device {
   }
 
   get cursorPos(): number{
-    return this.cursor;
+    return this.C? this.cursor : -10;
   }
 
 }

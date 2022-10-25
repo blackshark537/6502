@@ -11,7 +11,8 @@ import { Screen } from 'src/app/Core/interfaces/Screen';
 export class LcdComponent extends Device implements Screen, AfterViewInit {
   @ViewChild('screen', {static: true}) element: ElementRef
   canvas: HTMLCanvasElement;
-  color = "cornflowerblue";//"orange";
+  color = "cornflowerblue";//"orange";//"chartreuse";//
+  txtColor = "white"//"black"//
   width = 400;
   height = 200;
   bgImg = new Image();
@@ -30,6 +31,10 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   write(address: number, data: number): void {}
   reset(): void {}
   
+  internalState(): Object {
+      return this.lcdCtrl.internalState;
+  }
+
   ngAfterViewInit(): void {
     
     this.bgImg.onload = ()=>{
@@ -60,6 +65,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
 
     const ctx = this.canvas.getContext('2d');
     
+    //lcd backgraound
     ctx.fillStyle = this.color;
     this.rect();
 
@@ -70,16 +76,16 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
       
       let ch = line1[i]?? ' ';
       let ch2 = line2[i]?? ' ';
-      ctx.fillStyle = "white";
+      ctx.fillStyle = this.txtColor;
 
-      ctx.fillText('_', 55+(15.5* c), 75+27);
+      ctx.fillText('_', 55+(15.3* c), 75+27);
 
       ctx.fillText(ch, 55+(15.3*i), 75+22);
       ctx.fillText(ch2, 55+(15.3*i), 104+22);
 
       ctx.fillStyle = `rgba(10, 11, 237,${this.contrast})`;
-      ctx.fillRect(47+(15.5*i), 75, 14, 27);
-      ctx.fillRect(47+(15.5*i), 104, 14, 27);
+      ctx.fillRect(47+(15.3*i), 75, 14, 27); //up
+      ctx.fillRect(47+(15.3*i), 104, 14, 27); // down
     }
   }
 

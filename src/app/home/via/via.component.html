@@ -1,5 +1,50 @@
 <h2>6522</h2>
-<app-leds  [set]="device.PORTA$ | async" label="PORT A" color="success"></app-leds>
+<ion-label >
+  <ion-icon name="warning" color="warning"></ion-icon>
+  <p>Just work port A & port B for now, both as input or output</p>
+  <p>Internal timer and interrupts are not implemented.</p>
+</ion-label>
+<ion-item>
+  <ion-checkbox [(ngModel)]="isPorts" slot="start"></ion-checkbox>
+  <ion-label slot="start">Ports</ion-label>
+
+  <ion-label *ngIf="isPorts">
+    <h2>Port A: {{device.porta.toString(16) | zeropad: 2}}</h2>
+  </ion-label>
+  <ion-label *ngIf="isPorts">
+    <h2>Port B: {{device.portb.toString(16) | zeropad: 2}}</h2>
+  </ion-label>
+</ion-item>
+
+<ion-item>
+  <ion-checkbox [(ngModel)]="isSettings" slot="start"></ion-checkbox>
+  <ion-label>Settings</ion-label>
+</ion-item>
+
+<ion-list *ngIf="isSettings">
+  <ion-item>
+    <ion-checkbox [(ngModel)]="device.connectRandomDevice" slot="start"></ion-checkbox>
+    <ion-label>Attach Random Number Generator</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-checkbox [(ngModel)]="device.connectKeyboard" slot="start"></ion-checkbox>
+    <ion-label>Attach Keyboard (uses IRQ And PB)</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-checkbox [(ngModel)]="device.connectLcd" slot="start"></ion-checkbox>
+    <ion-label>Attach LCD (uses PB, PA7 PA6 & PA5)</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-checkbox [(ngModel)]="device.connectToIRQ" slot="start"></ion-checkbox>
+    <ion-label>Attach 6522 IRQ to 6502 IRQ PIN</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-checkbox [(ngModel)]="device.connectToNMI" slot="start"></ion-checkbox>
+    <ion-label>Attach 6522 IRQ to 6502 NMI PIN</ion-label>
+  </ion-item>
+</ion-list>
+
+<!-- <app-leds  [set]="device.PORTA$ | async" label="PORT A" color="success"></app-leds>
 <app-leds  [set]="device.PORTB$ | async" label="PORT B" color="warning"></app-leds>
 
 <ion-accordion-group [multiple]="true" style="margin-top: 2em;">
@@ -31,10 +76,9 @@
             <ion-checkbox [(ngModel)]="device.connectToNMI" slot="start"></ion-checkbox>
             <ion-label>Attach 6522 IRQ to 6502 NMI PIN</ion-label>
         </ion-item>
-        <!-- <ion-item>
-            <ion-button fill="solid" (click)="device.irq()">Interrupt</ion-button>
-        </ion-item> -->
+        <ion-item>
+            <ion-button fill="solid" (click)="device.dispatchiIRQ()">Interrupt</ion-button>
+        </ion-item>
       </div>
     </ion-accordion>
-
-</ion-accordion-group>
+</ion-accordion-group> -->

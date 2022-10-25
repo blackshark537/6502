@@ -23,6 +23,10 @@ export class MemoryService extends Device {
         this.refresh();
     }
 
+    internalState(): Object {
+        return {};
+    }
+
     From(address: number)
     {
         if(address > 0xffff || address >= this.to) return;

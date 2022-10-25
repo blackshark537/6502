@@ -377,7 +377,7 @@ export class CPU6502 extends Device{
      * CPU STATUS
      * @returns Object with the CPU Status Acumulator And X, Y Registers
      */
-    public cpu_status(): Object{
+    public internalState(): Object{
         return {
             STATUS: {
                 N: this.GetFlag(FLAGS6502.N) ? 1 : 0,

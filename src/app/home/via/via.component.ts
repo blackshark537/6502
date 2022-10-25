@@ -7,7 +7,8 @@ import { VIADeviceService } from 'src/app/Core';
   styleUrls: ['./via.component.scss'],
 })
 export class ViaComponent {
-
+  isSettings = false;
+  isPorts = false;
   constructor(
     public device: VIADeviceService
   ) { }

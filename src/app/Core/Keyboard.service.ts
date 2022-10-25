@@ -21,6 +21,10 @@ export class KeyboardDeviceService extends Device {
     
     reset(): void {}
 
+    internalState(): Object {
+        return {};
+    }
+
     public TurnOn(){
         addEventListener('keyup', ev => {
             ev.preventDefault();

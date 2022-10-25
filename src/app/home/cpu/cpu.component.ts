@@ -7,7 +7,7 @@ import { ComputerService } from 'src/app/Core';
   styleUrls: ['./cpu.component.scss'],
 })
 export class CpuComponent {
-
+  status: boolean = false;
   constructor(
     public device: ComputerService
   ) { }

@@ -3,7 +3,7 @@
         <h1>{{title}}</h1>
     </ion-title>
 
-    <ion-button slot="end" fill="solid" (click)="loadSource()">code</ion-button>
+    <ion-button slot="end" fill="solid" (click)="loadSource()">asm</ion-button>
     <ion-button slot="end" fill="solid" (click)="loadHex()">hex</ion-button>
     <ion-button [disabled]="!isSource" slot="end" fill="solid" (click)="assemble()">ASSEMBLE</ion-button>
 </ion-buttons>
