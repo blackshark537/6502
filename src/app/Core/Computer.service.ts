@@ -28,6 +28,7 @@ export class ComputerService {
         this.via.connectDevice(this.lcd);
         this.via.connectDevice(this.keyboard);
         this.clock$ = interval(this.freq);
+
     }
 
     get vendor(): DeviceInfo

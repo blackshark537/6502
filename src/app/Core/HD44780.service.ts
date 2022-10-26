@@ -219,9 +219,6 @@ export class LcdDeviceService extends Device {
         if (this.S === 1) {
           this.offset1 += this.ID? 1 : -1;
           this.offset2 += this.ID? 1 : -1;
-        } else if(this.AC > this.CHARS_PER_LINE-1 && this.AC < 40){
-          this.AC = 40;
-          this.cursor = this.AC;
         }else{
           this.cursor = this.AC;
         }
@@ -375,7 +372,7 @@ export class LcdDeviceService extends Device {
    */
   private functionSet()
   {
-    //this.N = this.GetDataFlag(PORTBIT.DB3);
+    this.N = this.GetDataFlag(PORTBIT.DB3);
   }
 
   /**
@@ -495,11 +492,15 @@ export class LcdDeviceService extends Device {
   }
 
   get line2(): string[] {
-    return this.DDRAM.filter((el, i)=> i >= this.offset2 )
+    return this.DDRAM.filter((el, i)=> i >= this.offset2 && this.N > 0 )
   }
-
+  
+  /**
+   * Return cursor position if C flag is active
+   * and the cursor is between 0 and 15
+   */
   get cursorPos(): number{
-    return this.C? this.cursor : -10;
+    return this.C && (this.cursor < 16 || this.cursor >= 0)? this.cursor : -10;
   }
 
 }
