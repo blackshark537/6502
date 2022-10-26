@@ -113,7 +113,7 @@ CURSOR_R:
     RTS
   
 CURSOR_L:
-    LDA #%00000100
+    LDA #%00010000
     STA PORTB
     LDA E
     STA PORTA
@@ -129,7 +129,6 @@ PRINT:
     STA PORTA
     LDA #$00
     STA PORTA
-    JSR DELAY
     RTS
 
 
@@ -147,9 +146,6 @@ IRQ_HANDLER:
     CMP #$08
     BNE @HOME
     JSR CURSOR_L
-    LDA #$20
-    JSR PRINT
-    JSR CURSOR_R
     RTI
 
 @HOME:

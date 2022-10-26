@@ -79,7 +79,15 @@ export class LcdDeviceService extends Device {
    * Display data RAM
    */
   private DDRAM_SIZE = 80;
-  private DDRAM: Array<string> = new Array(this.DDRAM_SIZE);
+  private DDRAM: Array<string> = [
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+    " "," "," "," "," "," "," "," "," "," ",
+  ];
 
   /**
    * In the character generator RAM, the user can rewrite character patterns by program. 
@@ -152,13 +160,15 @@ export class LcdDeviceService extends Device {
     this.D = 0;
     this.C = 0;
     this.B = 0;
-    this.ID = 1;
+    this.ID = 0;
     this.S = 0;
     this.RL = 0;
     this.SC = 0;
     this.BF = false;
     this.AC = 0;
     this.cursor=0;
+    this.offset1=0;
+    this.offset2=40;
     this.SetDataFlag(PORTBIT.DB7, this.BF);
   }
 
@@ -197,14 +207,9 @@ export class LcdDeviceService extends Device {
         const hi = this.DR >> 4 & 0x0F;
         const lo = this.DR & 0x0F;
         const char = this.CGROM[lo][hi];
-        // Put character into DDRAM
+        // Place character into DDRAM
         this.DDRAM[this.AC] = char;
         this.AC += this.ID? 1 : -1; //Increment Address Counter
-
-        if(this.cursor>=0 && this.cursor < this.CHARS_PER_LINE-1) {
-          this.cursor = this.AC;
-          if(this.cursor >= this.CHARS_PER_LINE) this.cursor = this.CHARS_PER_LINE-1;
-        }
 
         /**
          * Shifts the entire display either to the right (I/D = 1) or 
@@ -212,18 +217,13 @@ export class LcdDeviceService extends Device {
          * The display does not shift if S is 0.
          */
         if (this.S === 1) {
-          if(this.offset1 >= 0 ){ 
-            if(this.AC < (this.N? 40 : 80) && this.AC > this.CHARS_PER_LINE){
-              this.offset1 += this.ID? 1 : -1;
-            }
-          }
-
-          if(this.offset2 >= 0 ){ 
-            if(this.AC > 40 && this.AC > (40 + this.CHARS_PER_LINE)){
-              this.offset2 += this.ID? 1 : -1;
-            }
-          }
-
+          this.offset1 += this.ID? 1 : -1;
+          this.offset2 += this.ID? 1 : -1;
+        } else if(this.AC > this.CHARS_PER_LINE-1 && this.AC < 40){
+          this.AC = 40;
+          this.cursor = this.AC;
+        }else{
+          this.cursor = this.AC;
         }
 
         // if address register is less than 0
@@ -398,7 +398,7 @@ export class LcdDeviceService extends Device {
     this.AC = 0;
     this.cursor = 0;
     this.offset1 = 0;
-    this.offset2 = 0;
+    this.offset2 = 40;
   }
 
   /**
@@ -443,22 +443,21 @@ export class LcdDeviceService extends Device {
      */
     if(!this.SC && !this.RL){
       this.cursor -= 1;
-      //this.AC = this.cursor;
+      this.AC -= 1; 
     }else if(!this.SC && !!this.RL){
       this.cursor += 1;
-      //this.AC = this.cursor;
+      this.AC += 1
     }
 
     if(!!this.SC && !this.RL){
-        this.offset1 += -1;
-        this.offset2 += -1;
+        this.offset1 -= 1;
+        this.offset2 -= 1;
         this.cursor += 1;
     }else if(!!this.SC && !!this.RL){
       this.offset1 += 1;
       this.offset2 += 1;
-      this.cursor += -1;
+      this.cursor -= 1;
     }
-    this.AC = this.cursor;
     this.refreshScreen();
   }
 
@@ -491,12 +490,12 @@ export class LcdDeviceService extends Device {
     _screen.fillText(this.line1, this.line2);
   }
 
-  get line1(): string {
-    return this.DDRAM.filter((el, i)=> i < (this.N? 40 : 80) && i >= this.offset1 ).join('');
+  get line1(): string[] {
+    return this.DDRAM.filter((el, i)=> i < (this.N? 39 : 79) && i >= (this.offset1-1) )
   }
 
-  get line2(): string {
-    return this.DDRAM.filter((el, i)=> !!this.N && i >= 39 + this.offset2 ).join('');
+  get line2(): string[] {
+    return this.DDRAM.filter((el, i)=> i >= this.offset2 )
   }
 
   get cursorPos(): number{

@@ -38,8 +38,6 @@ PROG    = $8000 ; Program Rom Origin.
 E        = #%10000000
 RS       = #%00100000
 
-COUNT   = $00
-
 .org PROG
 RESTART:
 ; CODE HERE

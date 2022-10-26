@@ -113,11 +113,4 @@ export class MemoryService extends Device {
         throw new Error(`Error: Address is out of  Bound`);
     }
 
-    setParent(parent: Device): void {
-        
-    }
-
-    connectDevice(device: Device): void {
-        
-    }
 }
