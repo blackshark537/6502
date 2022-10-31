@@ -51,39 +51,34 @@ LDX #$00
 JMP @LOOP
 
 @LOOP:
-  LDA $8900,X
+  LDA MESSAGE,X
   JSR PRINT
   INX
-  TXA
-  CMP #15
+  CPX #15
   BNE @CONT
   JSR LCD_ENTRY2
 @CONT:
-  CMP #32
+  CPX #32
   BNE @LOOP
   BRK
 ;PGM END
 
 LCD_ENTRY:
   LDA #%00000110
-  STA PORTB
-  LDA E
-  STA PORTA
-  LDA #$00
-  STA PORTA
+  JSR CMD
   RTS
 
 LCD_ENTRY2:
   LDA #%00000111
-  STA PORTB
-  LDA E
-  STA PORTA
-  LDA #$00
-  STA PORTA
+  JSR CMD
   RTS
 
 LCD_ON:
   LDA #%00001100
+  JSR CMD
+  RTS
+
+CMD:
   STA PORTB
   LDA E
   STA PORTA
@@ -100,11 +95,17 @@ PRINT:
   STA PORTA
   RTS
 
-.org $8900
+MESSAGE:
 .byte "Welcome To 6502 8-Bits Computer."
 
-.org RESB
-.addr RESTART  
+NMI:
+IRQ:
+  RTI
+
+.org NMI
+.addr NMI
+.addr RESTART
+.addr IRQ 
 `;
 
   title: string = '.ASM';

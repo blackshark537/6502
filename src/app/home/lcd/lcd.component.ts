@@ -76,7 +76,7 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
       let ch2 = line2[i]?? ' ';
       ctx.fillStyle = this.txtColor;
 
-      if(cursor < 16) ctx.fillText('_', 55+(15.3* cursor), 75+27);
+      ctx.fillText('_', 55+(15.3* cursor), 75+27);
 
       ctx.fillText(ch, 55+(15.3*i), 75+22);
       ctx.fillText(ch2, 55+(15.3*i), 104+22);

@@ -440,10 +440,10 @@ export class LcdDeviceService extends Device {
      */
     if(!this.SC && !this.RL){
       this.cursor -= 1;
-      this.AC -= 1; 
+      this.AC = this.cursor;
     }else if(!this.SC && !!this.RL){
       this.cursor += 1;
-      this.AC += 1
+      this.AC = this.cursor;
     }
 
     if(!!this.SC && !this.RL){
@@ -500,7 +500,7 @@ export class LcdDeviceService extends Device {
    * and the cursor is between 0 and 15
    */
   get cursorPos(): number{
-    return this.C && (this.cursor < 16 || this.cursor >= 0)? this.cursor : -10;
+    return this.C && (this.cursor < 16 || this.cursor > 0)? this.cursor : -10;
   }
 
 }
