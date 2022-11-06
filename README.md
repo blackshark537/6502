@@ -1,4 +1,4 @@
-# 6502 8-Bits Based Computer
+  # 6502 8-Bits Based Computer
 
 ![Demo](src/assets/imgs/ScreenShot.png)
 
@@ -114,3 +114,4 @@ ng serve
 ## License
 
 Licensed under the [MIT](LICENSE) License.
+  

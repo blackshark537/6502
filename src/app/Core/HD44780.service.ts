@@ -483,8 +483,8 @@ export class LcdDeviceService extends Device {
   }
 
   private refreshScreen() {
-    let _screen = this.hasDevice(Screen.name) as Screen;
-    _screen.fillText(this.line1, this.line2);
+    let screen = this.hasDevice(Screen.name) as Screen;
+    screen.fillText(this.line1, this.line2);
   }
 
   get line1(): string[] {

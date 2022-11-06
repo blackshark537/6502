@@ -38,11 +38,11 @@ export class LcdComponent extends Device implements Screen, AfterViewInit {
   ngAfterViewInit(): void {
     
     this.bgImg.onload = ()=>{
-      this.display();
+      this.initDisplay();
     }
   }
 
-  display()
+  initDisplay()
   {
     this.canvas = this.element.nativeElement;
     this.canvas.width = this.width;

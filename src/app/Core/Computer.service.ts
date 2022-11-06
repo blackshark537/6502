@@ -13,7 +13,7 @@ import { KeyboardDeviceService } from "./Keyboard.service";
 export class ComputerService {
     private freq: number = 1;
 
-    public clock$: Observable<any>;
+    private _clock$: Observable<number>;
     private sub$: Subscription;
 
     constructor(
@@ -27,13 +27,12 @@ export class ComputerService {
         this.cpu.connectDevice(this.via);
         this.via.connectDevice(this.lcd);
         this.via.connectDevice(this.keyboard);
-        this.clock$ = interval(this.freq);
-
+        this.cpu.freq = (1000/this.freq).toFixed(0);
+        this._clock$ = interval(this.freq);
     }
 
     get vendor(): DeviceInfo
     {
-        this.cpu.freq = (1000/this.freq).toFixed(0);
         return this.cpu.deviceInfo();
     }
 
@@ -42,14 +41,9 @@ export class ComputerService {
         return this.cpu.internalState() as any;
     }
 
-    get clock(): Observable<number>
+    get clock$(): Observable<number>
     {
-        return this.clock$;
-    }
-
-    get sync(): number
-    {
-        return this.freq;
+        return this._clock$;
     }
 
     run()
@@ -57,11 +51,22 @@ export class ComputerService {
         this.stop();
         this.cpu.reset();
         this.via.reset();
-        this.sub$ = this.clock$.subscribe(_=>{
+        this.sub$ = this._clock$.subscribe(_=>{
             this.cpu.clock();
             this.memory.refresh();
-            if(this.cpu.isComplete) this.stop();
+            if(this.cpu.isComplete) this.stop();    
         });
+    }
+
+    fastRun()
+    {
+        this.stop();
+        this.cpu.reset();
+        this.via.reset();
+        while(!this.cpu.isComplete){
+            this.cpu.clock();
+            this.memory.refresh();
+        }
     }
 
     stop()
